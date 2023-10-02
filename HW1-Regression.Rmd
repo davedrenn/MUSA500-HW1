@@ -8,6 +8,8 @@ date: "2023-10-19"
 knitr::opts_chunk$set(echo = TRUE)
 
 library(here)
+library(tidyverse)
+library(kableExtra)
 
 options(scipen = 999)
 ```
@@ -42,28 +44,46 @@ hist(data$NBELPOV100, breaks = 50)
 hist(data$PCTVACANT, breaks = 50)
 hist(data$PCTSINGLES, breaks = 50)
 
-mean(data$MEDHVAL)
-mean(data$PCTBACHMOR)
-mean(data$NBELPOV100)
-mean(data$PCTVACANT)
-mean(data$PCTSINGLES)
-
-sd(data$MEDHVAL)
-sd(data$PCTBACHMOR)
-sd(data$NBELPOV100)
-sd(data$PCTVACANT)
-sd(data$PCTSINGLES)
-
 ```
+
+```{r table}
+
+summary_stats_mean <- data %>%
+  summarise(HEDVAL = mean(MEDHVAL),
+            PCTBACHMOR = mean(PCTBACHMOR),
+            NBELPOV100 = mean(NBELPOV100),
+            PCTVACANT = mean(PCTVACANT),
+            PCTSINGLE = mean(PCTSINGLES)) %>%
+  gather(key = "variable", value = "mean")
+            
+summary_stats_sd <- data %>%
+  summarise(HEDVAL = sd(MEDHVAL),
+            PCTBACHMOR = sd(PCTBACHMOR),
+            NBELPOV100 = sd(NBELPOV100),
+            PCTVACANT = sd(PCTVACANT),
+            PCTSINGLE = sd(PCTSINGLES)) %>%
+  gather(key = "variable", value = "sd") %>%
+  mutate(row_names = c('Median House Value','# Households Living in Poverty','% of Individuals with Bachelor Degrees or Higher','% of Vacant Houses','% of Single House Units')) 
+
+summary_stats
+
+left_join(summary_stats_mean, summary_stats_sd, by='variable') %>%
+  dplyr::select('row_names','mean','sd') %>%
+  kbl(col.names = c('Variable','Mean','Standard Deviation')) %>%
+  kable_classic()
+  
+```
+
 # quick code that cehcks which variables have 0 values for logarithmic transformation 
 ```{r 0_value_check}
 zero_columns <- apply(data, 2, function(col) any(col == 0)) 
 
 variables_with_zero_values <- names(zero_columns[zero_columns])
 
-cat("Columns with 0 values:", paste(columns_with_zeros, collapse = ", "))
+cat("Columns with 0 values:", paste(variables_with_zero_values, collapse = ", "))
 
 ```
+
 ```{r log_trans}
 LNMEDHVAL <- log(data$MEDHVAL)
 LNPCBACHMORE <- log(1 + data$PCTBACHMOR)
@@ -79,6 +99,7 @@ hist(LNPCTSINGLES)
 
 ```
  
+
 # Scatter Plots - Looking at linearity between dependent variable (LNMEDHVAL) and predictors (LNNBELPOV100,data$PCTBACHMOR, data$PCTVACANT, data$PCTSINGLES  )  
  
 ```{r scatter}
@@ -87,6 +108,9 @@ plot(data$PCTBACHMOR,LNMEDHVAL)
 plot(data$PCTVACANT,LNMEDHVAL)
 plot(data$PCTSINGLES, LNMEDHVAL)
 ```
+
+
+
 # Pearson correlations
 
 ```{r pearson}

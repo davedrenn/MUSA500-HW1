@@ -7,7 +7,10 @@ date: "2023-10-19"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-library(here)
+install.packages("rgdal")
+library(sf)
+library(tidyverse)
+library(gridExtra)
 
 options(scipen = 999)
 ```
@@ -61,7 +64,7 @@ zero_columns <- apply(data, 2, function(col) any(col == 0))
 
 variables_with_zero_values <- names(zero_columns[zero_columns])
 
-cat("Columns with 0 values:", paste(columns_with_zeros, collapse = ", "))
+cat("Columns with 0 values:", paste(variables_with_zero_values, collapse = ", "))
 
 ```
 ```{r log_trans}
@@ -94,8 +97,48 @@ predictors <- as.matrix(cbind( data$PCTBACHMOR, data$PCTVACANT,data$PCTSINGLES,L
 
 cor(predictors)
 ```
-library(car)
-vif_result <- vif(predictors)
+
+```{r LNMEDHVAL map}
+
+# Change design
+map <- st_read("Data/RegressionData.shp")
+
+ggplot() +
+  geom_sf(data = map, aes(fill = LNMEDHVAL), color = NA) +
+  scale_fill_gradient(low = "white",high = "darkseagreen4") +
+  labs(title = "Log Median Home Value")
+
+```
+
+```{r variables maps, fig.width = 12}
+# Change designs
+pctvacant_map <- ggplot() +
+  geom_sf(data = map, aes(fill = PCTVACANT), color = NA) +
+  scale_fill_gradient(low = "white",high = "darkblue") +
+  labs(title = "Vacant",
+       fill = "%")
+
+pctsingles_map <- ggplot() +
+  geom_sf(data = map, aes(fill = PCTSINGLES), color = NA) +
+  scale_fill_gradient(low = "white",high = "darkorchid4") +
+  labs(title = "Singles",
+       fill = "%")
+
+pctbachmor_map <- ggplot() +
+  geom_sf(data = map, aes(fill = PCTBACHMOR), color = NA) +
+  scale_fill_gradient(low = "white",high = "darkorange") +
+  labs(title = "Bachelor's or More",
+       fill = "%")
+
+lnnbelpov100_map <- ggplot() +
+  geom_sf(data = map, aes(fill = LNNBELPOV100), color = NA) +
+  scale_fill_gradient(low = "white",high = "darkred") +
+  labs(title = "Log Below Poverty",
+       fill = "%")
+
+grid.arrange(pctvacant_map, pctsingles_map, pctbachmor_map, lnnbelpov100_map)
+
+```
 
 ## Regression Results
 

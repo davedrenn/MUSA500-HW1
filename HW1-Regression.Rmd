@@ -6,8 +6,10 @@ date: "2023-10-19"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
+library(rgdal)
 library(here)
+library(ggplot2)
+library(sf)
 
 options(scipen = 999)
 ```
@@ -96,8 +98,29 @@ predictors <- as.matrix(cbind( data$PCTBACHMOR, data$PCTVACANT,data$PCTSINGLES,L
 cor(predictors)
 ```
 
-
+```{r regression}
 ## Regression Results
+
+fit <-lm(LNMEDHVAL ~  PCTVACANT + PCTSINGLES + PCTBACHMOR, data=data)
+
+summary(fit)
+
+anova(fit)
+
+#Predicted values (y-hats)
+data$predvals <- fitted(fit) 
+#Residuals
+data$resids <- residuals(fit)
+#Standardized Residuals
+data$stdres <- rstandard(fit)
+
+plot(data$predvals, data$stdres)
+
+plot(data$predvals, data$stdres, xlab = "Predicted Values ", ylab = "Standardized Residuals ", main = "Predicted Values vs.Standardized Residuals ")
+
+```
+
+
 
 ## Regression Assumptions Checks
 

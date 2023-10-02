@@ -7,7 +7,6 @@ date: "2023-10-19"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-install.packages("rgdal")
 library(sf)
 library(tidyverse)
 library(gridExtra)
@@ -29,6 +28,7 @@ options(scipen = 999)
 ## Software
 
 # Results
+
 ## Exploratory Results
 
 ```{r data}
@@ -59,7 +59,7 @@ sd(data$PCTSINGLES)
 
 ```
 # quick code that cehcks which variables have 0 values for logarithmic transformation 
-```{r 0_value_check}
+```{r 0_value_check2}
 zero_columns <- apply(data, 2, function(col) any(col == 0)) 
 
 variables_with_zero_values <- names(zero_columns[zero_columns])
@@ -140,7 +140,29 @@ grid.arrange(pctvacant_map, pctsingles_map, pctbachmor_map, lnnbelpov100_map)
 
 ```
 
+```{r regression}
 ## Regression Results
+
+fit <-lm(LNMEDHVAL ~  PCTVACANT + PCTSINGLES + PCTBACHMOR, data=data)
+
+summary(fit)
+
+anova(fit)
+
+#Predicted values (y-hats)
+data$predvals <- fitted(fit) 
+#Residuals
+data$resids <- residuals(fit)
+#Standardized Residuals
+data$stdres <- rstandard(fit)
+
+plot(data$predvals, data$stdres)
+
+plot(data$predvals, data$stdres, xlab = "Predicted Values ", ylab = "Standardized Residuals ", main = "Predicted Values vs.Standardized Residuals ")
+
+```
+
+
 
 ## Regression Assumptions Checks
 

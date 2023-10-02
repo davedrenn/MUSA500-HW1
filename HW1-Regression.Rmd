@@ -55,6 +55,47 @@ sd(data$PCTVACANT)
 sd(data$PCTSINGLES)
 
 ```
+# quick code that cehcks which variables have 0 values for logarithmic transformation 
+```{r 0_value_check}
+zero_columns <- apply(data, 2, function(col) any(col == 0)) 
+
+variables_with_zero_values <- names(zero_columns[zero_columns])
+
+cat("Columns with 0 values:", paste(columns_with_zeros, collapse = ", "))
+
+```
+```{r log_trans}
+LNMEDHVAL <- log(data$MEDHVAL)
+LNPCBACHMORE <- log(1 + data$PCTBACHMOR)
+LNNBELPOV100 <- log(1 + data$NBELPOV100)
+LNPCTVACANT <- log(1 + data$PCTVACANT)
+LNPCTSINGLES <- log(1 + data$PCTSINGLES)
+
+hist(LNMEDHVAL)
+hist(LNPCBACHMORE)
+hist(LNNBELPOV100)
+hist(LNPCTVACANT)
+hist(LNPCTSINGLES)
+
+```
+ 
+# Scatter Plots - Looking at linearity between dependent variable (LNMEDHVAL) and predictors (LNNBELPOV100,data$PCTBACHMOR, data$PCTVACANT, data$PCTSINGLES  )  
+ 
+```{r scatter}
+plot(LNNBELPOV100, LNMEDHVAL)
+plot(data$PCTBACHMOR,LNMEDHVAL)
+plot(data$PCTVACANT,LNMEDHVAL)
+plot(data$PCTSINGLES, LNMEDHVAL)
+```
+# Pearson correlations
+
+```{r pearson}
+predictors <- as.matrix(cbind( data$PCTBACHMOR, data$PCTVACANT,data$PCTSINGLES,LNNBELPOV100 ))
+
+cor(predictors)
+```
+library(car)
+vif_result <- vif(predictors)
 
 ## Regression Results
 

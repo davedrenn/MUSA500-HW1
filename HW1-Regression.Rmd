@@ -26,6 +26,7 @@ options(scipen = 999)
 ## Software
 
 # Results
+
 ## Exploratory Results
 
 ```{r data}
@@ -56,12 +57,12 @@ sd(data$PCTSINGLES)
 
 ```
 # quick code that cehcks which variables have 0 values for logarithmic transformation 
-```{r 0_value_check}
+```{r 0_value_check2}
 zero_columns <- apply(data, 2, function(col) any(col == 0)) 
 
 variables_with_zero_values <- names(zero_columns[zero_columns])
 
-cat("Columns with 0 values:", paste(columns_with_zeros, collapse = ", "))
+cat("Columns with 0 values:", paste(variables_with_zero_values, collapse = ", "))
 
 ```
 ```{r log_trans}
@@ -94,8 +95,7 @@ predictors <- as.matrix(cbind( data$PCTBACHMOR, data$PCTVACANT,data$PCTSINGLES,L
 
 cor(predictors)
 ```
-library(car)
-vif_result <- vif(predictors)
+
 
 ## Regression Results
 

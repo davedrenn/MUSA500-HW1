@@ -198,7 +198,9 @@ summary(fit)
 anova(fit)
 ```
 
-```{r plot_residfuals}
+```{r plot_stand_resid}
+##predicted values, residuals and standardized residuals
+
 #Predicted values (y-hats)
 data$predvals <- fitted(fit) 
 #Residuals
@@ -208,6 +210,17 @@ data$stdres <- rstandard(fit)
 
 plot(data$predvals, data$stdres, xlab = "Predicted Values ", ylab = "Standardized Residuals ", main = "Predicted Values vs.Standardized Residuals ")
 ```
+```{r plot_stepwise}
+
+step <- stepAIC(fit, direction="both")
+# display results
+#We see that in the final model PCTVACANT was dropped
+step$anova
+
+```
+
+
+
 
 ## Regression Assumptions Checks
 

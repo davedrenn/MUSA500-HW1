@@ -42,12 +42,6 @@ data <- read.csv("Data/RegressionData.csv")
 
 ```{r histogram}
 
-hist(data$MEDHVAL,breaks = 50)
-hist(data$PCTBACHMOR, breaks = 50)
-hist(data$NBELPOV100, breaks = 50)
-hist(data$PCTVACANT, breaks = 50)
-hist(data$PCTSINGLES, breaks = 50)
-
 ```
 
 ```{r table}
@@ -69,8 +63,6 @@ summary_stats_sd <- data %>%
   gather(key = "variable", value = "sd") %>%
   mutate(row_names = c('Median House Value','# Households Living in Poverty','% of Individuals with Bachelor Degrees or Higher','% of Vacant Houses','% of Single House Units')) 
 
-summary_stats
-
 left_join(summary_stats_mean, summary_stats_sd, by='variable') %>%
   dplyr::select('row_names','mean','sd') %>%
   kbl(col.names = c('Variable','Mean','Standard Deviation')) %>%
@@ -89,38 +81,69 @@ cat("Columns with 0 values:", paste(variables_with_zero_values, collapse = ", ")
 ```
 
 ```{r log_trans}
-LNMEDHVAL <- log(data$MEDHVAL)
-LNPCBACHMORE <- log(1 + data$PCTBACHMOR)
-LNNBELPOV100 <- log(1 + data$NBELPOV100)
-LNPCTVACANT <- log(1 + data$PCTVACANT)
-LNPCTSINGLES <- log(1 + data$PCTSINGLES)
-
-hist(LNMEDHVAL)
-hist(LNPCBACHMORE)
-hist(LNNBELPOV100)
-hist(LNPCTVACANT)
-hist(LNPCTSINGLES)
-
+data$LNMEDHVAL <- log(data$MEDHVAL)
+data$LNPCTBACHMOR <- log(1 + data$PCTBACHMOR)
+data$LNBELPOV100 <- log(1 + data$NBELPOV100)
+data$LNPCTVACANT <- log(1 + data$PCTVACANT)
+data$LNPCTSINGLES <- log(1 + data$PCTSINGLES)
 ```
- 
+
+
+```{r hist_MEDHVAL}
+par(mfrow=c(1,2))
+hist(data$MEDHVAL,breaks=50)
+hist(data$LNMEDHVAL,breaks=50)
+```
+
+
+```{r hist_PCTBACHMOR}
+par(mfrow=c(1,2))
+hist(data$PCTBACHMOR,breaks=50)
+hist(data$LNPCTBACHMOR,breaks=50)
+```
+
+
+```{r hist_NBELPOV100}
+par(mfrow=c(1,2))
+hist(data$NBELPOV100,breaks=50)
+hist(data$LNBELPOV100,breaks=50)
+```
+
+
+```{r hist_PCTVACANT}
+par(mfrow=c(1,2))
+hist(data$PCTVACANT,breaks=50)
+hist(data$LNPCTVACANT,breaks=50)
+```
+
+
+```{r hist_PCTSINGLES}
+par(mfrow=c(1,2))
+hist(data$PCTSINGLES,breaks=50)
+hist(data$LNPCTSINGLES,breaks=50)
+```
 
 # Scatter Plots - Looking at linearity between dependent variable (LNMEDHVAL) and predictors (LNNBELPOV100,data$PCTBACHMOR, data$PCTVACANT, data$PCTSINGLES  )  
  
 ```{r scatter}
-plot(LNNBELPOV100, LNMEDHVAL)
-plot(data$PCTBACHMOR,LNMEDHVAL)
-plot(data$PCTVACANT,LNMEDHVAL)
-plot(data$PCTSINGLES, LNMEDHVAL)
+par(mfrow=c(2,2))
+plot(data$LNBELPOV100, data$LNMEDHVAL)
+plot(data$PCTBACHMOR,data$LNMEDHVAL)
+plot(data$PCTVACANT, data$LNMEDHVAL)
+plot(data$PCTSINGLES, data$LNMEDHVAL)
 ```
-
-
 
 # Pearson correlations
 
 ```{r pearson}
-predictors <- as.matrix(cbind( data$PCTBACHMOR, data$PCTVACANT,data$PCTSINGLES,LNNBELPOV100 ))
+predictors <- as.matrix(cbind(data$PCTBACHMOR, data$PCTVACANT,data$PCTSINGLES,data$LNBELPOV100 ))
 
-cor(predictors)
+cor(predictors) %>% as.data.frame.table() %>% 
+  spread(key='Var2',value='Freq') %>% 
+  mutate(row_name = c('PCTBACHMOR','PCTVACANT','PCTSINGLES','LNBELPOV100')) %>%
+  dplyr::select('row_name','A','B','C','D') %>%
+  kbl(col.names = c('','PCTBACHMOR','PCTVACANT','PCTSINGLES','LNBELPOV100')) %>%
+  kable_classic()
 ```
 
 ```{r LNMEDHVAL map}
@@ -156,7 +179,7 @@ pctbachmor_map <- ggplot() +
        fill = "%")
 
 lnnbelpov100_map <- ggplot() +
-  geom_sf(data = map, aes(fill = LNNBELPOV100), color = NA) +
+  geom_sf(data = map, aes(fill = LNNBELPOV), color = NA) +
   scale_fill_gradient(low = "white",high = "darkred") +
   labs(title = "Log Below Poverty",
        fill = "%")
@@ -173,7 +196,9 @@ fit <-lm(LNMEDHVAL ~  PCTVACANT + PCTSINGLES + PCTBACHMOR, data=data)
 summary(fit)
 
 anova(fit)
+```
 
+```{r plot_residfuals}
 #Predicted values (y-hats)
 data$predvals <- fitted(fit) 
 #Residuals
@@ -181,13 +206,8 @@ data$resids <- residuals(fit)
 #Standardized Residuals
 data$stdres <- rstandard(fit)
 
-plot(data$predvals, data$stdres)
-
 plot(data$predvals, data$stdres, xlab = "Predicted Values ", ylab = "Standardized Residuals ", main = "Predicted Values vs.Standardized Residuals ")
-
 ```
-
-
 
 ## Regression Assumptions Checks
 

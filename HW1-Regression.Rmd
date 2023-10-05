@@ -12,7 +12,8 @@ library(tidyverse)
 library(kableExtra)
 library(sf)
 library(gridExtra)
-
+library(MASS)
+library(DAAG)
 
 options(scipen = 999)
 ```
@@ -191,7 +192,7 @@ grid.arrange(pctvacant_map, pctsingles_map, pctbachmor_map, lnnbelpov100_map)
 ```{r regression}
 ## Regression Results
 
-fit <-lm(LNMEDHVAL ~  PCTVACANT + PCTSINGLES + PCTBACHMOR, data=data)
+fit <-lm(LNMEDHVAL ~  PCTVACANT + PCTSINGLES + PCTBACHMOR + LNBELPOV100, data=data)
 
 summary(fit)
 
@@ -214,12 +215,29 @@ plot(data$predvals, data$stdres, xlab = "Predicted Values ", ylab = "Standardize
 
 step <- stepAIC(fit, direction="both")
 # display results
-#We see that in the final model PCTVACANT was dropped
 step$anova
 
 ```
 
+```{r cross-validation, message=FALSE, cache=FALSE,  echo=TRUE, results='hide', fig.show='hide'}
 
+fit1 <- lm(LNMEDHVAL ~ PCTVACANT + PCTSINGLES + PCTBACHMOR + LNBELPOV100, data=data)
+cv1 <- CVlm(data=data, fit1, m=5)
+
+mse1 <- attr(cv1, "ms")
+rmse1 <- sqrt(mse1)						  #Obtaining RMSE for model 1
+rmse1
+
+
+
+fit2 <- lm(LNMEDHVAL ~ PCTVACANT + MEDHHINC, data=data)
+cv2 <- CVlm(data=data, fit2, m=5)
+
+mse2 <- attr(cv2, "ms")
+rmse2 <- sqrt(mse2)						  #Obtaining RMSE for model 2
+rmse2
+
+```
 
 
 ## Regression Assumptions Checks

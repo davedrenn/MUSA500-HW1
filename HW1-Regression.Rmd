@@ -228,8 +228,6 @@ mse1 <- attr(cv1, "ms")
 rmse1 <- sqrt(mse1)						  #Obtaining RMSE for model 1
 rmse1
 
-
-
 fit2 <- lm(LNMEDHVAL ~ PCTVACANT + MEDHHINC, data=data)
 cv2 <- CVlm(data=data, fit2, m=5)
 
@@ -239,6 +237,18 @@ rmse2
 
 ```
 
+```{r resid map+hist}
+
+hist(data$stdres)
+
+map2 <- cbind(map, data %>% dplyr::select(stdres))
+
+ggplot()+
+  geom_sf(data=map2, aes(fill = stdres), color = NA)+
+  scale_fill_viridis_c()
+  
+
+```
 
 ## Regression Assumptions Checks
 

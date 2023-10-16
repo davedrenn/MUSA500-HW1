@@ -51,7 +51,7 @@ As part of our exploratory data analysis, we will examine the Pearson correlatio
 
 equation
 
-The Pearson correlation value ranges between -1 to 1, with no units of measurement attached, and the observed variables are interchangeable between the x and y axis. A value of -1 represents a perfect negative linear relationship and a value of 1 represents a perfect positive linear relationship - in either case, points on a graph would appear in a straight line with either a negative or positive slope, respectively. 
+The Pearson correlation value ranges between -1 to 1, with no units of measurement attached, and the observed variables are interchangeable between the x axis and y axis. A value of -1 represents a perfect negative linear relationship and a value of 1 represents a perfect positive linear relationship - in either case, points on a graph would appear in a straight line with either a negative or positive slope, respectively. 
 
 A Pearson correlation value of 0 indicates that there is no linear relationship between two variables. However, a different type of relationship can exist, such as an exponential or quadratic relationship, that the Pearson correlation does not measure. 
 
@@ -113,7 +113,7 @@ cat("Columns with 0 values:", paste(variables_with_zero_values, collapse = ", ")
 ```{r log_trans}
 data$LNMEDHVAL <- log(data$MEDHVAL)
 data$LNPCTBACHMOR <- log(1 + data$PCTBACHMOR)
-data$LNBELPOV100 <- log(1 + data$NBELPOV100)
+data$LNBELPOV100 <- log(1 + data$NBELPOV100) #Rename and add N to match original name?
 data$LNPCTVACANT <- log(1 + data$PCTVACANT)
 data$LNPCTSINGLES <- log(1 + data$PCTSINGLES)
 ```
@@ -282,7 +282,14 @@ rmse2
 
 In this section, we will discuss testing model assumptions. We have already examined the variable distributions in a prior section. 
 
-### Scatter Plots - Looking at linearity between dependent variable (LNMEDHVAL) and predictors (LNNBELPOV100,data$PCTBACHMOR, data$PCTVACANT, data$PCTSINGLES )  
+### Scatter Plots - Linear Relationships Between Variables
+
+<!-- This first and second para may be unnecessary -->
+When running linear regressions, a core assumption is that there is a linear relationship between the dependent variable and each of the predictor variables. To check this assumption, we plot the dependent variable with each of the predictor variables in a scatter plot. 
+
+In cases where this assumption is not met, log transformations are often used. Based on the results of our variable distributions, we have already conducted log transformations for the dependent variable for median home value, now LNMEDHVAL, and for the predictor variable for number of households below poverty, now LNNBELPOV100.
+
+The following scatter plots show the relationship between the dependent variable, LNMEDHVAL, and each the predictor variables LNNBELPOV100, PCTBACHMOR, PCTVACANT, and PCTSINGLES. There does not appear to be a linear relationship between LNMEDHVAL and the predictor variables, even with log transformations used. The variables all appear heavily skewed - the relationship between LNNBELPOV and LNBELPOV100 appears to be  negatively skewed, and the individual relationship between the other three predictors and LNMEDHVAL appears to be heavily positively skewed.
  
 ```{r scatter}
 par(mfrow=c(2,2))
@@ -293,6 +300,14 @@ plot(data$PCTSINGLES, data$LNMEDHVAL)
 ```
 
 ###Histogram of the standardized residuals
+
+<!-- This first para may be unnecessary -->
+Another assumption when running linear regression is that regression residuals are distributed normally. However, this assumption of normality is not considered critical in a regression, especially for data sets with a large number of observations. 
+
+In order to compare residuals for different observations, we standardize the residuals through dividing a residual by its standard error. Standardizing allows us to observe how many standard deviations a residual is from our model's estimate
+
+The following histogram of standardized residuals shows that residuals appear normally distributed.
+
 ```{r resid plot}
 
 #predicted values, residuals and standardized residuals
@@ -304,18 +319,31 @@ data$resids <- residuals(fit)
 #Standardized Residuals
 data$stdres <- rstandard(fit)
 
-hist(data$stdres)
+hist(data$stdres, breaks=100)
 
 ```
 
 
-###Standardized Residual by Predicted Value’ scatter plot
+###Scatter Plot - Standardized Residual by Predicted Value
+
+<!-- This first para may be unnecessary -->
+
+An additional core assumption of linear regression is that there is constant variance in residuals compared to the predicted values of the model - this relationship is referred to as homoscedastic. If non-constant variance is observed, the relationship is heteroscedastic. 
+
+Given that there multiple predictors, we can plot the standardized residuals of the model by our predicted values of LNMEDHVAL. The scatter plot of standardized residuals appears to show a slight heteroscedastic relationship, based on a small "bow-tie" shape present around the predicted value of 11.5. 
+
+Outliers also appear to be present based on our scatter plot - there are several positive standardized residuals above 4 standard deviations above 0 and at least one standardized residual beyond -6 standard deviation below 0.
+
+The standardized residuals also appear to be heavily clustered around between the predicted values of about 10.5 to 11.5.
+
 ```{r plot_stand_resid}
 
-plot(data$predvals, data$stdres, xlab = "Predicted Values ", ylab = "Standardized Residuals ", main = "Predicted Values vs.Standardized Residuals ")
+plot(data$predvals, data$stdres, xlab = "Predicted Values ", ylab = "Standardized Residuals ", main = "Predicted Values vs. Standardized Residuals ")
 
 ```
+###Spatial Autocorrelation of Variables
 
+Based on the maps of the dependent variable LNMEDHVAL and the predictor variables, we can estimate whether observations of each variable appear to show spatial autocorrelation. 
 
 ###Choropleth map of the standardized regression residuals
 ```{r resid map}

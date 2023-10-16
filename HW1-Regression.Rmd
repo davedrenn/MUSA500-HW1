@@ -14,6 +14,7 @@ library(sf)
 library(gridExtra)
 library(MASS)
 library(DAAG)
+library(ggcorrplot) # plot correlation plot
 
 options(scipen = 999)
 ```
@@ -62,7 +63,7 @@ summary_stats_sd <- data %>%
             PCTVACANT = sd(PCTVACANT),
             PCTSINGLE = sd(PCTSINGLES)) %>%
   gather(key = "variable", value = "sd") %>%
-  mutate(row_names = c('Median House Value','# Households Living in Poverty','% of Individuals with Bachelor Degrees or Higher','% of Vacant Houses','% of Single House Units')) 
+  mutate(row_names = c('Median Houme Value of all occupied housing units','% of Individuals with Bachelor Degrees or Higher','# Households Living in Poverty','% of Vacant Houses','% of Single House Units')) 
 
 left_join(summary_stats_mean, summary_stats_sd, by='variable') %>%
   dplyr::select('row_names','mean','sd') %>%
@@ -92,8 +93,8 @@ data$LNPCTSINGLES <- log(1 + data$PCTSINGLES)
 
 ```{r hist_MEDHVAL}
 par(mfrow=c(1,2))
-hist(data$MEDHVAL,breaks=50)
-hist(data$LNMEDHVAL,breaks=50)
+hist(data$MEDHVAL,breaks=100)
+hist(data$LNMEDHVAL,breaks=100)
 ```
 
 
@@ -137,14 +138,12 @@ plot(data$PCTSINGLES, data$LNMEDHVAL)
 # Pearson correlations
 
 ```{r pearson}
-predictors <- as.matrix(cbind(data$PCTBACHMOR, data$PCTVACANT,data$PCTSINGLES,data$LNBELPOV100 ))
+predictors <- data %>% dplyr::select(PCTBACHMOR, PCTVACANT, PCTSINGLES, LNBELPOV100)
 
-cor(predictors) %>% as.data.frame.table() %>% 
-  spread(key='Var2',value='Freq') %>% 
-  mutate(row_name = c('PCTBACHMOR','PCTVACANT','PCTSINGLES','LNBELPOV100')) %>%
-  dplyr::select('row_name','A','B','C','D') %>%
-  kbl(col.names = c('','PCTBACHMOR','PCTVACANT','PCTSINGLES','LNBELPOV100')) %>%
-  kable_classic()
+predictors %>% 
+  correlate() %>% 
+  autoplot() +
+  geom_text(aes(label = round(r,digits=2)),size = 8)
 ```
 
 ```{r LNMEDHVAL map}

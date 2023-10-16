@@ -153,18 +153,6 @@ hist(data$PCTSINGLES,breaks=100)
 hist(data$LNPCTSINGLES,breaks=100)
 ```
 
-
-# Pearson correlations
-
-```{r pearson}
-predictors <- data %>% dplyr::select(PCTBACHMOR, PCTVACANT, PCTSINGLES, LNBELPOV100)
-
-predictors %>% 
-  correlate() %>% 
-  autoplot() +
-  geom_text(aes(label = round(r,digits=2)),size = 8)
-```
-
 ```{r LNMEDHVAL map}
 
 # Change design
@@ -228,8 +216,7 @@ pctbachmor_map <- ggplot() +
 lnnbelpov100_map <- ggplot() +
   geom_sf(data = map, aes(fill = LNNBELPOV), color = NA) +
   scale_fill_gradient(low = "white",high = "darkred") +
-  labs(title = "Log Below Poverty",
-       fill = "%")+
+  labs(title = "Log Below Poverty")+
   theme_dark() +
   theme( 
     panel.grid.major = element_blank(),
@@ -241,6 +228,19 @@ lnnbelpov100_map <- ggplot() +
 grid.arrange(pctvacant_map, pctsingles_map, pctbachmor_map, lnnbelpov100_map)
 
 ```
+
+# Pearson correlations
+
+```{r pearson}
+predictors <- data %>% dplyr::select(PCTBACHMOR, PCTVACANT, PCTSINGLES, LNBELPOV100)
+
+predictors %>% 
+  correlate() %>% 
+  autoplot() +
+  geom_text(aes(label = round(r,digits=2)),size = 8)
+```
+
+# Regression Analysis
 
 ```{r regression}
 ## Regression Results

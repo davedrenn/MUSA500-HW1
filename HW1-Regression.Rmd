@@ -24,13 +24,44 @@ options(scipen = 999)
 # Methods
 ## Data Cleaning
 
+The data set used in our analysis contains information from the 2000 US Census for Philadelphia, with neighborhood characteristic variables included for 1,720 block groups. Our analysis incorporates the following variables:
+
+- POLY_ID: Census Block Group ID
+- MEDHVAL: Median value of all owner occupied housing units
+- PCBACHMORE: Proportion of residents in Block Group with at least a bachelor’s degree
+- PCTVACANT: Proportion of housing units that are vacant
+- PCTSINGLES: Percent of housing units that are detached single family houses 
+- NBELPOV100: Number of households with incomes below 100% poverty level (i.e., number of households living in poverty)
+- MEDHHINC: Median household income
+
+The original data set had 1,816 block groups and was cleaned using the following methods, which reduced to the total number of observations to 1,720:
+
+- Block groups where population < 40
+- Block groups where there are no housing units
+- Block groups where the median house value is lower than $10,000
+- One North Philadelphia block group which had a very high median house value (over \$800,000) and a very low median household income (less than \$8,000)
+
+In this analysis, we will examine the relationships between our dependent variable, MEDHVAL, and the predictors PCBACHMORE, NBELPOV100, PCTVACANT, and PCTSINGLES.
+
 ## Exploratory Data Analysis
+
+We will examine the summary statistics and distributions of the data set’s variables, including the mean and standard deviation of our dependent variable and predictor variables.
+
+As part of our exploratory data analysis, we will examine the Pearson correlations between the predictors. A Pearson correlation is a standardized measurement of the strength and direction of the linear relationship between two variables. The correlation between two variables is calculated using the following equation:
+
+equation
+
+The Pearson correlation value ranges between -1 to 1, with no units of measurement attached, and the observed variables are interchangeable between the x and y axis. A value of -1 represents a perfect negative linear relationship and a value of 1 represents a perfect positive linear relationship - in either case, points on a graph would appear in a straight line with either a negative or positive slope, respectively. 
+
+A Pearson correlation value of 0 indicates that there is no linear relationship between two variables. However, a different type of relationship can exist, such as an exponential or quadratic relationship, that the Pearson correlation does not measure. 
 
 ## Multiple Regression Analysis
 
 ## Additional Analyses
 
 ## Software
+
+This report used the open source software R to conduct statistical analyses.
 
 # Results
 
@@ -68,7 +99,8 @@ left_join(summary_stats_mean, summary_stats_sd, by='variable') %>%
   
 ```
 
-# quick code that cehcks which variables have 0 values for logarithmic transformation 
+# quick code that checks which variables have 0 values for logarithmic transformation 
+
 ```{r 0_value_check2}
 zero_columns <- apply(data, 2, function(col) any(col == 0)) 
 
@@ -121,15 +153,6 @@ hist(data$PCTSINGLES,breaks=100)
 hist(data$LNPCTSINGLES,breaks=100)
 ```
 
-# Scatter Plots - Looking at linearity between dependent variable (LNMEDHVAL) and predictors (LNNBELPOV100,data$PCTBACHMOR, data$PCTVACANT, data$PCTSINGLES  )  
- 
-```{r scatter}
-par(mfrow=c(2,2))
-plot(data$LNBELPOV100, data$LNMEDHVAL)
-plot(data$PCTBACHMOR,data$LNMEDHVAL)
-plot(data$PCTVACANT, data$LNMEDHVAL)
-plot(data$PCTSINGLES, data$LNMEDHVAL)
-```
 
 # Pearson correlations
 
@@ -150,7 +173,14 @@ map <- st_read("Data/RegressionData.shp")
 ggplot() +
   geom_sf(data = map, aes(fill = LNMEDHVAL), color = NA) +
   scale_fill_gradient(low = "white",high = "darkseagreen4") +
-  labs(title = "Log Median Home Value")
+  labs(title = "Log Median Home Value") +
+  theme_dark() +
+  theme( 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_blank()
+    )
 
 ```
 
@@ -160,25 +190,53 @@ pctvacant_map <- ggplot() +
   geom_sf(data = map, aes(fill = PCTVACANT), color = NA) +
   scale_fill_gradient(low = "white",high = "darkblue") +
   labs(title = "Vacant",
-       fill = "%")
+       fill = "%")+
+  theme_dark() +
+  theme( 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_blank()
+    )
 
 pctsingles_map <- ggplot() +
   geom_sf(data = map, aes(fill = PCTSINGLES), color = NA) +
   scale_fill_gradient(low = "white",high = "darkorchid4") +
   labs(title = "Singles",
-       fill = "%")
+       fill = "%")+
+  theme_dark() +
+  theme( 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_blank()
+    )
 
 pctbachmor_map <- ggplot() +
   geom_sf(data = map, aes(fill = PCTBACHMOR), color = NA) +
   scale_fill_gradient(low = "white",high = "darkorange") +
   labs(title = "Bachelor's or More",
-       fill = "%")
+       fill = "%")+
+  theme_dark() +
+  theme( 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_blank()
+    )
 
 lnnbelpov100_map <- ggplot() +
   geom_sf(data = map, aes(fill = LNNBELPOV), color = NA) +
   scale_fill_gradient(low = "white",high = "darkred") +
   labs(title = "Log Below Poverty",
-       fill = "%")
+       fill = "%")+
+  theme_dark() +
+  theme( 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_blank()
+    )
 
 grid.arrange(pctvacant_map, pctsingles_map, pctbachmor_map, lnnbelpov100_map)
 
@@ -192,19 +250,6 @@ fit <-lm(LNMEDHVAL ~  PCTVACANT + PCTSINGLES + PCTBACHMOR + LNBELPOV100, data=da
 summary(fit)
 
 anova(fit)
-```
-
-```{r plot_stand_resid}
-##predicted values, residuals and standardized residuals
-
-#Predicted values (y-hats)
-data$predvals <- fitted(fit) 
-#Residuals
-data$resids <- residuals(fit)
-#Standardized Residuals
-data$stdres <- rstandard(fit)
-
-plot(data$predvals, data$stdres, xlab = "Predicted Values ", ylab = "Standardized Residuals ", main = "Predicted Values vs.Standardized Residuals ")
 ```
 
 ```{r plot_stepwise}
@@ -233,20 +278,64 @@ rmse2
 
 ```
 
-```{r resid map+hist}
+## Regression Assumptions Checks
+
+In this section, we will discuss testing model assumptions. We have already examined the variable distributions in a prior section. 
+
+### Scatter Plots - Looking at linearity between dependent variable (LNMEDHVAL) and predictors (LNNBELPOV100,data$PCTBACHMOR, data$PCTVACANT, data$PCTSINGLES )  
+ 
+```{r scatter}
+par(mfrow=c(2,2))
+plot(data$LNBELPOV100, data$LNMEDHVAL)
+plot(data$PCTBACHMOR,data$LNMEDHVAL)
+plot(data$PCTVACANT, data$LNMEDHVAL)
+plot(data$PCTSINGLES, data$LNMEDHVAL)
+```
+
+###Histogram of the standardized residuals
+```{r resid plot}
+
+#predicted values, residuals and standardized residuals
+
+#Predicted values (y-hats)
+data$predvals <- fitted(fit) 
+#Residuals
+data$resids <- residuals(fit)
+#Standardized Residuals
+data$stdres <- rstandard(fit)
 
 hist(data$stdres)
+
+```
+
+
+###Standardized Residual by Predicted Value’ scatter plot
+```{r plot_stand_resid}
+
+plot(data$predvals, data$stdres, xlab = "Predicted Values ", ylab = "Standardized Residuals ", main = "Predicted Values vs.Standardized Residuals ")
+
+```
+
+
+###Choropleth map of the standardized regression residuals
+```{r resid map}
 
 map2 <- cbind(map, data %>% dplyr::select(stdres))
 
 ggplot()+
   geom_sf(data=map2, aes(fill = stdres), color = NA)+
-  scale_fill_viridis_c()
-  
+  scale_fill_viridis_c()+
+  labs(title = "Standardized Regression Residuals") +
+  theme_dark() +
+  theme( 
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_blank()
+    )
 
 ```
 
-## Regression Assumptions Checks
 
 ## Additional Models
 

@@ -206,6 +206,7 @@ data$stdres <- rstandard(fit)
 
 plot(data$predvals, data$stdres, xlab = "Predicted Values ", ylab = "Standardized Residuals ", main = "Predicted Values vs.Standardized Residuals ")
 ```
+
 ```{r plot_stepwise}
 
 step <- stepAIC(fit, direction="both")

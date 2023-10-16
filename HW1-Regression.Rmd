@@ -14,7 +14,7 @@ library(sf)
 library(gridExtra)
 library(MASS)
 library(DAAG)
-library(ggcorrplot) # plot correlation plot
+library(corrr)      # another way to plot correlation plot
 
 options(scipen = 999)
 ```
@@ -39,10 +39,6 @@ options(scipen = 999)
 ```{r data}
 
 data <- read.csv("Data/RegressionData.csv")
-
-```
-
-```{r histogram}
 
 ```
 
@@ -100,29 +96,29 @@ hist(data$LNMEDHVAL,breaks=100)
 
 ```{r hist_PCTBACHMOR}
 par(mfrow=c(1,2))
-hist(data$PCTBACHMOR,breaks=50)
-hist(data$LNPCTBACHMOR,breaks=50)
+hist(data$PCTBACHMOR,breaks=100)
+hist(data$LNPCTBACHMOR,breaks=100)
 ```
 
 
 ```{r hist_NBELPOV100}
 par(mfrow=c(1,2))
-hist(data$NBELPOV100,breaks=50)
-hist(data$LNBELPOV100,breaks=50)
+hist(data$NBELPOV100,breaks=100)
+hist(data$LNBELPOV100,breaks=100)
 ```
 
 
 ```{r hist_PCTVACANT}
 par(mfrow=c(1,2))
-hist(data$PCTVACANT,breaks=50)
-hist(data$LNPCTVACANT,breaks=50)
+hist(data$PCTVACANT,breaks=100)
+hist(data$LNPCTVACANT,breaks=100)
 ```
 
 
 ```{r hist_PCTSINGLES}
 par(mfrow=c(1,2))
-hist(data$PCTSINGLES,breaks=50)
-hist(data$LNPCTSINGLES,breaks=50)
+hist(data$PCTSINGLES,breaks=100)
+hist(data$LNPCTSINGLES,breaks=100)
 ```
 
 # Scatter Plots - Looking at linearity between dependent variable (LNMEDHVAL) and predictors (LNNBELPOV100,data$PCTBACHMOR, data$PCTVACANT, data$PCTSINGLES  )  

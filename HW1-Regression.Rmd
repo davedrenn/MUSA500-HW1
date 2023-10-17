@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
 ```
 
 ```{r packages}
-#tinytex::install_tinytex(force=TRUE)
+#tinytex::install_tinytex()
 
 library(here)
 library(tidyverse)
@@ -151,7 +151,7 @@ $$R_{adj}^2 = \frac{(n-1)R^2 - k}{n-(k+1)}$$
 
 ### Hypothesis Testing
 
-When stating the hypothesis we first look at F-Ratio which tests the overall significance of the model by testing the Null Hypothesis $H_0: β_i=0$ that none of the independent variables in the model is a significant predictor of the dependent variable (LNMEDHVAL) against the Alternative Hypothesis $H_a: β_i≠0$ that at least one of the independent variables is a significant predictor of the dependent variable (LNMEDHVAL). Second, we look at the T-Test which will test the Null Hypothesis against the Alternative Hypothesis for each of the chosen predictors $β_1PCTVACANT$, \$ β_2PCTSINGLES\$, $β_3PCTBACHMOR$, $β_4LNNBELPOV100$.
+When stating the hypothesis we first look at F-Ratio which tests the overall significance of the model by testing the Null Hypothesis $H_0: β_i=0$ that none of the independent variables in the model is a significant predictor of the dependent variable (LNMEDHVAL) against the Alternative Hypothesis $H_a: β_i≠0$ that at least one of the independent variables is a significant predictor of the dependent variable (LNMEDHVAL). Second, we look at the T-Test which will test the Null Hypothesis against the Alternative Hypothesis for each of the chosen predictors $β_1PCTVACANT$, $β_2PCTSINGLES$, $β_3PCTBACHMOR$, $β_4LNNBELPOV100$.
 
 PCTVACANT: $H_0: β_1=0$: Implies that the variable PCTVACANT is not a significant predictor of the dependent variable (LNMEDHVAL). $H_a: β_1≠0$: Implies that the variable PCTVACANT is a significant predictor of the dependent variable (LNMEDHVAL).
 
@@ -168,6 +168,7 @@ Stepwise regression is a data mining method which selects predictors based on th
 ### K-Fold Cross-Validation
 
 The k-Fold Cross-Validation approach involves randomly dividing the set of observations into $k$ groups (or folds), of approximately equal size . In practice it is typical to use $k=5$ or $k=10$. The first fold is treated as a validation set and the model is fitted on the remaining $k-1$ folds (training data set). The mean squared error (MSE) is then computed on the observations in the held-out fold. The procedure is repeated $k$ times, each time, a different fold is treated as the validation set. This process results in $k$ estimates of MSE, The k-fold MSE estimate is computed by averaging the MSEs across the k folds.  The k-fold Root Mean Squared Error (RMSE) is computed as the square root of the MSE $RMSE = \sqrt{\frac{\sum_{i=1}^n \epsilon_i^2}{n}}$. RMSE values can be compared across different models, the model with the smallest RMSE will be the best model.
+
 ## Additional Analyses
 
 ## Software
@@ -246,8 +247,8 @@ Our analysis will use the natural log transformation of median home sales value 
 
 ```{r hist_MEDHVAL}
 par(mfrow=c(1,2))
-hist(data$MEDHVAL,breaks=100, family = A)
-hist(data$LNMEDHVAL,breaks=100, family = A)
+hist(data$MEDHVAL,breaks=100, family = 'A')
+hist(data$LNMEDHVAL,breaks=100, family = 'A')
 ```
 
 #### Percent of Population with a Bachelor Degree:
@@ -264,8 +265,6 @@ par(mfrow=c(1,2))
 hist(data$PCTBACHMOR,breaks=100, family = "A")
 hist(data$LNPCTBACHMOR,breaks=100, family = "A")
 ```
-
-
 
 
 #### Population Below the Poverty Line
@@ -429,7 +428,7 @@ predictors %>%
 
 When we review our regression analysis we start by examining the f-ratio. The f-ratio is 840.9, and the p-value associated with the f-ratio is less than 0.0001. Thus, we can reject the null hypothesis that all β coefficients are zero. 
 
-After reviewing the f-ratio, we proceed to reviewing the β coefficients, standard errors, t values, and p-scores for our four dependent variables. All four dependent variables have a p-score which indicates that the β coefficients are statistically significant and we can reject the null hypotheses that the coefficients of any of our β coefficients are equal to 0. 
+After reviewing the f-ratio, we proceed to reviewing the β coefficients, standard errors, t statistics, and p values for our four dependent variables. All four dependent variables have a p-score which indicates that the β coefficients are statistically significant (<0.05) and we can reject the null hypotheses that any of our β coefficients are equal to 0. 
 
 Because we rejected the null hypotheses, we can conclude that:
 
@@ -530,9 +529,7 @@ plot(data$predvals, data$stdres, xlab = "Predicted Values ", ylab = "Standardize
 
 ### Spatial Autocorrelation of Variables
 
-
 Based on the maps of the dependent variable LNMEDHVAL and the predictor variables, we can estimate whether observations of each variable appear to show spatial autocorrelation - defined as observing the degree to which similar values cluster near each other. Our variables may appear to spatial autocorrelation
-
 
 ### Choropleth map of the standardized regression residuals
 

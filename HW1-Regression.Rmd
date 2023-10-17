@@ -343,7 +343,7 @@ plot(data$predvals, data$stdres, xlab = "Predicted Values ", ylab = "Standardize
 ```
 ###Spatial Autocorrelation of Variables
 
-Based on the maps of the dependent variable LNMEDHVAL and the predictor variables, we can estimate whether observations of each variable appear to show spatial autocorrelation. 
+Based on the maps of the dependent variable LNMEDHVAL and the predictor variables, we can estimate whether observations of each variable appear to show spatial autocorrelation - defined as observing the degree to which similar values cluster near each other. Our variables may appear to spatial autocorrelation  
 
 ###Choropleth map of the standardized regression residuals
 ```{r resid map}

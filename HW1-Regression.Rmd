@@ -1,11 +1,16 @@
 ---
 title: "HW1-OLS_Regression"
-output: html_document
+output:
+  pdf_document:
+    latex_engine: xelatex
 date: "2023-10-19"
+mainfont: "Times New Roman"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+#tinytex::install_tinytex()
 
 library(here)
 library(tidyverse)
@@ -15,9 +20,15 @@ library(gridExtra)
 library(MASS)
 library(DAAG)
 library(corrr)      # another way to plot correlation plot
+library(extrafont)
+
+windowsFonts(A = windowsFont("Times New Roman"))
 
 options(scipen = 999)
 ```
+
+$$SSE = \sum(y_i - \hat{y_i})^2 = \sum[y_i - (\hat\beta_0 + \hat\beta_1x_{1i} + \hat\beta_2x_{2i} + ... + \hat\beta_kx_{ki})]^2 $$
+
 
 # Introduction
 
@@ -47,9 +58,9 @@ In this analysis, we will examine the relationships between our dependent variab
 
 We will examine the summary statistics and distributions of the data set’s variables, including the mean and standard deviation of our dependent variable and predictor variables.
 
-As part of our exploratory data analysis, we will examine the Pearson correlations between the predictors. A Pearson correlation is a standardized measurement of the strength and direction of the linear relationship between two variables. The correlation between two variables is calculated using the following equation:
+As part of our exploratory data analysis, we will examine the Pearson correlations between the predictors. A Pearson correlation, denoted by "r", is a standardized measurement of the strength and direction of the linear relationship between two variables. The correlation between two variables is calculated using the following equation:
 
-equation
+$$r=\frac{1}{n-1}\sum_{i=1}^{n}\left(\frac{x_i-x ̅}{s_x}\right)\left(\frac{y_i-y ̅}{s_x}\right)$$
 
 The Pearson correlation value ranges between -1 to 1, with no units of measurement attached, and the observed variables are interchangeable between the x axis and y axis. A value of -1 represents a perfect negative linear relationship and a value of 1 represents a perfect positive linear relationship - in either case, points on a graph would appear in a straight line with either a negative or positive slope, respectively. 
 
@@ -120,9 +131,10 @@ data$LNPCTSINGLES <- log(1 + data$PCTSINGLES)
 
 
 ```{r hist_MEDHVAL}
+
 par(mfrow=c(1,2))
 hist(data$MEDHVAL,breaks=100)
-hist(data$LNMEDHVAL,breaks=100)
+hist(data$LNMEDHVAL,breaks=100, family = "A")
 ```
 
 

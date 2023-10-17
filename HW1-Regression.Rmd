@@ -118,9 +118,7 @@ Performing multiple regression requires one to estimate the values for a critica
 
 $$SSE = \sum(y_i - \hat{y_i})^2 = \sum[y_i - (\hat\beta_0 + \hat\beta_1x_{1i} + \hat\beta_2x_{2i} + ... + \hat\beta_kx_{ki})]^2 $$
 
-
-
-$hat{\beta}_0$ In Multiple regression $σ^2$ is found with the following equation $σ^2 = \frac{SSE}{n-(k+1)} = MSE$, where k = \# predictors and n = \# observations. Here, MSE stands for mean squared error.
+In Multiple regression $σ^2$ is found with the following equation $σ^2 = \frac{SSE}{n-(k+1)} = MSE$, where k = # predictors and n = # observations. Here, MSE stands for mean squared error.
 
 ### Coefficient of Multiple Determination $R^2$
 
@@ -130,9 +128,9 @@ $$R_{adj}^2 = \frac{(n-1)R^2 - k}{n-(k+1)}$$
 
 ### Hypothesis Testing
 
-When stating the hypothesis we first look at F-Ratio which tests the overall significance of the model by testing the Null Hypothesis $H_0: β_i=0$ that none of the independent variables in the model is a significant predictor of the dependent variable (LNMEDHVAL) against the Alternative Hypothesis $H_a: β_i≠0$ that at least one of the independent variables is a significant predictor of the dependent variable (LNMEDHVAL). We will look at the F-ratio for the chosen predictors $β_1PCTVACANT$, \$ β_2PCTSINGLES\$, $β_3PCTBACHMOR$, $β_4LNNBELPOV100$.
+When stating the hypothesis we first look at F-Ratio which tests the overall significance of the model by testing the Null Hypothesis $H_0: β_i=0$ that none of the independent variables in the model is a significant predictor of the dependent variable (LNMEDHVAL) against the Alternative Hypothesis $H_a: β_i≠0$ that at least one of the independent variables is a significant predictor of the dependent variable (LNMEDHVAL). Second, we look at the T-Test which will test the Null Hypothesis against the Alternative Hypothesis for each of the chosen predictors $β_1PCTVACANT$, \$ β_2PCTSINGLES\$, $β_3PCTBACHMOR$, $β_4LNNBELPOV100$.
 
-. PCTVACANT: $H_0: β_1=0$: Implies that the variable PCTVACANT is not a significant predictor of the dependent variable (LNMEDHVAL). $H_a: β_1≠0$: Implies that the variable PCTVACANT is a significant predictor of the dependent variable (LNMEDHVAL).
+PCTVACANT: $H_0: β_1=0$: Implies that the variable PCTVACANT is not a significant predictor of the dependent variable (LNMEDHVAL). $H_a: β_1≠0$: Implies that the variable PCTVACANT is a significant predictor of the dependent variable (LNMEDHVAL).
 
 PCTSINGLES: $H_0: β_2=0$: Implies that the variable PCTSINGLES is not a significant predictor of the dependent variable (LNMEDHVAL). $H_a: β_2≠0$: Implies that the variable PCTSINGLES is a significant predictor of the dependent variable (LNMEDHVAL).
 

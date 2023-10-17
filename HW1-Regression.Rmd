@@ -23,6 +23,12 @@ options(scipen = 999)
 
 # Introduction
 
+In this analysis we use linear regression to explain variation in median home prices in Philadelphia.
+
+We use multi-variate linear regression models to explain the correlation between median home value for a census tracts and four predicative variables in the city of Philadelphia. The predictive variables are:  Proportion of residents in Block Group with at least a bachelor’s degree, Proportion of housing units that are vacant, Percent of housing units that are detached single family houses, and the Number of households with incomes below 100% poverty level (i.e., number of households living in poverty).
+
+The proportion of housing units that are detached single family homes is included as a predictor, because detached single family homes tend to be larger and there is typically a correlation between home size and property value.  We include the percentage of lots which are vacant as a predictor because previous research has shown correlation between median home sales prices in Philadelphia. Gravin er all note that there are 40,000 vacant pacels in Philadelphia and most of these are concentrated in low income areas^[Eugenia Garvin et. all, More Than Just An Eyesore: Local Insights And Solutions on Vacant Land And Urban Health, Journal of Urban Health,https://link.springer.com/article/10.1007/s11524-012-9782-7]. 
+
 # Methods
 
 ## Data Cleaning
@@ -188,7 +194,7 @@ data$LNPCTSINGLES <- log(1 + data$PCTSINGLES)
 
 #### Median Home Value of owner occupied housing units
 
-The two histograms below show the distribution of our dependent variable, median home values of owner occupied housing units by census tract before and after applying a logarithmic transformation. The histogram without the logarithmic transformation peaks around 75,000 USD and is right skewed - it does not have a normal distribution. After applying a logarithmic transformation, the mean home value has a near normal distribution with a peak around 11. Our analysis will use the log-transformation of Median Household income as the independent variable because it is best practice to use a variable with a normal distribution when conducting a linear regression analysis.
+The two histograms below show the distribution of our dependent variable, median home values of owner occupied housing units by census tract before and after applying a logarithmic transformation. The histogram without the logarithmic transformation peaks around 75,000 USD and is right skewed - it does not have a normal distribution. After applying a logarithmic transformation, the mean home value has a near normal distribution with a peak around 11. Our analysis will use the log-transformation of median home sales value as the independent variable because it is best practice to use a variable with a normal distribution when conducting a linear regression analysis.
 
 ```{r hist_MEDHVAL, echo=FALSE}
 par(mfrow=c(1,2))

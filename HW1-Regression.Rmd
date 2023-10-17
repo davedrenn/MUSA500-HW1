@@ -11,6 +11,7 @@ mainfont: "Times New Roman"
 knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
 ```
 
+```{r packages}
 #tinytex::install_tinytex()
 
 library(here)
@@ -76,7 +77,7 @@ When we are dealing with more than one predictor, we run a multiple regression. 
 
 To examine the relationship between median house values and several neighborhood characteristics we will need to run a multiple regression. Using Philadelphia data at the Census block group level we regressed Natural Log of Median value of all owner occupied housing units (LNMEDHVAL) on the proportion of housing units that are vacant (PCTVACANT), the percent of housing units that are detached single family houses (PCTSINGLES), proportion of residents in Block Group with at least a bachelor’s degree (PCTBACHMOR), and the Natural Log of Number of households with incomes below 100% poverty level (LNNBELPOV100). The equation is stated as:
 
-LNMEDHHINC=β_0+β_1 PCTVACANT+β_2 PCTSINGLES+β_3 PCTBACHMOR+β_4 LNNBELPOV100+ ε
+$$LNMEDHHINC=β_0+β_1 PCTVACANT+β_2 PCTSINGLES+β_3 PCTBACHMOR+β_4 LNNBELPOV100+ ε$$
 
 The Beta coefficient β_i of each predictor may be interpreted as the amount by which the dependent variable changes as the independent variable increases by one unit (holding all other variables constant). The sign indicates whether the relationship between the dependent variable and the independent variables is positive (direct) or negative (inverse). It is important to look at the sign and value of β_i when the coefficient is statistically significant (significantly different from zero). The variable ε commonly referred to as the residual term or random error term in the model. The residual term ε allows the regression line to fall above (ε > 0) or below (ε < 0). The actual data points. ε is the difference between observed values of y and the values of y predicted by the regression model (denoted by y ̂).
 
@@ -173,7 +174,6 @@ left_join(summary_stats_mean, summary_stats_sd, by='variable') %>%
   dplyr::select('row_names','mean','sd') %>%
   kbl(col.names = c('Variable','Mean','Standard Deviation')) %>%
   kable_classic()
-  
 ```
 
 
@@ -201,7 +201,7 @@ data$LNPCTSINGLES <- log(1 + data$PCTSINGLES)
 ```{r hist_MEDHVAL}
 
 par(mfrow=c(1,2))
-hist(data$MEDHVAL,breaks=100)
+hist(data$MEDHVAL,breaks=100, family = "A")
 hist(data$LNMEDHVAL,breaks=100, family = "A")
 ```
 #### Percent of Population with a Bachelor Degree:
@@ -213,8 +213,8 @@ After applying a log transformation, the 143 census blocks which had a value of 
 
 ```{r hist_PCTBACHMOR, echo=FALSE}
 par(mfrow=c(1,2))
-hist(data$PCTBACHMOR,breaks=100)
-hist(data$LNPCTBACHMOR,breaks=100)
+hist(data$PCTBACHMOR,breaks=100, family = "A")
+hist(data$LNPCTBACHMOR,breaks=100, family = "A")
 ```
 
 #### Population Below the Poverty Line
@@ -226,8 +226,8 @@ After applying a log transformation, the variable displays a distribution which 
 
 ```{r hist_NBELPOV100, echo=FALSE}
 par(mfrow=c(1,2))
-hist(data$NBELPOV100,breaks=100)
-hist(data$LNBELPOV100,breaks=100)
+hist(data$NBELPOV100,breaks=100, family = "A")
+hist(data$LNBELPOV100,breaks=100, family = "A")
 ```
 
 #### Percent of Households units which are vacant
@@ -238,8 +238,8 @@ After applying the log transformation, the 163 census block groups which have a 
 
 ```{r hist_PCTVACANT, echo=FALSE}
 par(mfrow=c(1,2))
-hist(data$PCTVACANT,breaks=100)
-hist(data$LNPCTVACANT,breaks=100)
+hist(data$PCTVACANT,breaks=100, family = "A")
+hist(data$LNPCTVACANT,breaks=100, family = "A")
 ```
 
 #### Percent of housing units that are detached single family houses 
@@ -250,8 +250,8 @@ After applying the log transformation the 306 block groups where the percentage 
 
 ```{r hist_PCTSINGLES,echo=FALSE}
 par(mfrow=c(1,2))
-hist(data$PCTSINGLES,breaks=100)
-hist(data$LNPCTSINGLES,breaks=100)
+hist(data$PCTSINGLES,breaks=100, family = "A")
+hist(data$LNPCTSINGLES,breaks=100, family = "A")
 ```
 
 ### Maps
@@ -273,10 +273,11 @@ A <- ggplot() +
   labs(title = "Log Median Home Value") +
   theme_dark() +
   theme( 
+    plot.title = element_text(family = A),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.ticks = element_blank(),
-    axis.text = element_blank()
+    axis.text = element_blank(),
     )
 
 A

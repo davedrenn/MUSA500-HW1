@@ -73,6 +73,11 @@ data <- read.csv("Data/RegressionData.csv")
 
 ```
 
+### Summary Statistics
+
+This table below shows the mean and standard deviation for our independent variable (Median house value) and our four dependent variables. 
+The average median home value for census block groups in Philadelphia is 66,287.73 USD, and the standard deviation is 60,006 USD. The large standard deviation indicates a large amount of variability in average home sale prices across the different census block groups in Philadelphia. 
+
 ```{r table}
 
 summary_stats_mean <- data %>%
@@ -99,9 +104,8 @@ left_join(summary_stats_mean, summary_stats_sd, by='variable') %>%
   
 ```
 
-# quick code that checks which variables have 0 values for logarithmic transformation 
 
-```{r 0_value_check2}
+```{r 0_value_check2, eval=FALSE, echo=FALSE}
 zero_columns <- apply(data, 2, function(col) any(col == 0)) 
 
 variables_with_zero_values <- names(zero_columns[zero_columns])
@@ -109,8 +113,9 @@ variables_with_zero_values <- names(zero_columns[zero_columns])
 cat("Columns with 0 values:", paste(variables_with_zero_values, collapse = ", "))
 
 ```
+### Histograms
 
-```{r log_trans}
+```{r log_trans, echo=FALSE}
 data$LNMEDHVAL <- log(data$MEDHVAL)
 data$LNPCTBACHMOR <- log(1 + data$PCTBACHMOR)
 data$LNBELPOV100 <- log(1 + data$NBELPOV100)
@@ -118,12 +123,20 @@ data$LNPCTVACANT <- log(1 + data$PCTVACANT)
 data$LNPCTSINGLES <- log(1 + data$PCTSINGLES)
 ```
 
+#### Median Home Value of owner occupied housing units
+
+The two histograms below show the distribution of our dependent variable, median home values of owner occupied housing units by census tract before and after applying a logarithmic transformation. The histogram without the logarithmic transformation peaks around 75,000 USD and is right skewed - it does not have a normal distribution. After applying a logarithmic transformation, the mean home value has a near normal distribution with a peak around 11. Our analysis will use the log-transformation of Median Household income as the independent variable because it is best practice to use a variable with a normal distribution when conducting a linear regression analysis.
 
 ```{r hist_MEDHVAL}
 par(mfrow=c(1,2))
 hist(data$MEDHVAL,breaks=100)
 hist(data$LNMEDHVAL,breaks=100)
 ```
+#### Percent of Population with a Bachelor Degree:
+
+These histograms show the distribution of the percent of the population with a bachelor's degree by census tract before and after applying a logarithmic transformation. The histogram without the log transformation is right skewed, and there are 143 census blocks where 0% of the population has a bachelor degree. 
+
+After applying a log transformation, the 143 census blocks which had a value of 0% continue to have a value of 0. The distribution with the log transformation applied is not normal and has a zero infrared distribution. Because both the variable with and without the log transformation applied are both not normal we will use the variable without the log transformation (PCTBACHMORE) for the regression.
 
 
 ```{r hist_PCTBACHMOR}
@@ -131,6 +144,11 @@ par(mfrow=c(1,2))
 hist(data$PCTBACHMOR,breaks=100)
 hist(data$LNPCTBACHMOR,breaks=100)
 ```
+#### Population Below the Poverty Line
+
+The histograms below show the distribution of the population living below the poverty line in each census block with and without the log transformation applied. The histogram without the log transformation, is again right skewed and peaks around 100 households. There is a very long tail to the right, and multiple outliers are present. Notably, the maximum value is 1,267 households below the poverty line in one census tract - which is more than 6 times larger than the mean value. 
+
+After applying a log transformation, the variable displays a distribution which is closer to a normal distribution. There is a clear peak around 5.5, but the data is slightly skewed to the left and is zero inflated, but is closer to a normal distribution than the non log transformed variable. Because the log transformed variable is closer to a normal distribution we use the log transformation of the Population Below the Poverty Line (LNBELPOV100) in our regression.
 
 
 ```{r hist_NBELPOV100}
@@ -138,13 +156,22 @@ par(mfrow=c(1,2))
 hist(data$NBELPOV100,breaks=100)
 hist(data$LNBELPOV100,breaks=100)
 ```
+#### Percent of Households units which are vacant
 
+The histograms below show the distribution for the percent of housing units in a census tract which are vacant with and without the log transformation. The histogram without the log transformation is right skewed and has a long tail, with multiple outliers present. Additionally, there are 163 census block groups where 0% of the housing units are vacant.
+
+After applying the log transformation, the 163 census block groups which have a value of 0% still have a value of 0, the presence of the large number of census block groups with a value of zero prevents the distribution from being considered normal and results in a zero-inflated distribution. Because neither distribution is normal we use the variable without the log transformation in our regression analysis (PCTVACANT).
 
 ```{r hist_PCTVACANT}
 par(mfrow=c(1,2))
 hist(data$PCTVACANT,breaks=100)
 hist(data$LNPCTVACANT,breaks=100)
 ```
+#### Percent of housing units that are detached single family houses 
+
+The histograms below show the distribution for the percent of housing units that are detached single family homes by census block group with and without the log transformation. The histogram without the log transformation is very right skewed, and the vast majority of census block groups (i.e: 1,548) have a percentage less than 20%, and there are 306 block groups where the percentage value is 0. There are 172 census block groups which have percentages above 20% including three homes with values of 100%. The extreme outliers are likely are a result of the inclusion of sub-urban census block groups in Northeast and Northwest where most homes are detached single family homes. 
+
+After applying the log transformation the 306 block groups where the percentage was 0, continue to have a percentage value of 0 resulting in a zero inflated distribution. Because both the log transformed and non-log transformed variable do not have a normal distribution we use the non-log transformed variable in our regression analysis.
 
 
 ```{r hist_PCTSINGLES}
@@ -152,13 +179,20 @@ par(mfrow=c(1,2))
 hist(data$PCTSINGLES,breaks=100)
 hist(data$LNPCTSINGLES,breaks=100)
 ```
+### Maps
+
+This section includes coloropleth maps of our dependent and four independent variables.
+
+#### Map of Dependent Variable
+
+This map shows our dependent variable, which is the median house value of owner occupied units by census tract with a log transformation. We observe that the census tracts with the highest median home values are primarily clustered in center city and northwest Philadelphia. The census tracts with the lowest median home values are located North of center city and in areas of West Philadelphia located west of University City. 
 
 ```{r LNMEDHVAL map}
 
 # Change design
 map <- st_read("Data/RegressionData.shp")
 
-ggplot() +
+A <- ggplot() +
   geom_sf(data = map, aes(fill = LNMEDHVAL), color = NA) +
   scale_fill_gradient(low = "white",high = "darkseagreen4") +
   labs(title = "Log Median Home Value") +
@@ -170,7 +204,18 @@ ggplot() +
     axis.text = element_blank()
     )
 
+A
 ```
+
+#### Maps of Independant Variables
+
+The maps below show the spatial patterns on our four independent variables: PCTBACHMOR, PCTVACANT, PCTSINGLES, and LNBELPOV100. 
+Based on a review of the maps, the PCTBACHMOR variable appears to be the independent variable with the strongest correlation with our dependent variable. Like our dependent variable, the percent of residents living in the census tract with a bachelor degree is highest in center city and in Northwest Philadelphia. The areas with the lowest percentage of residents with a bachelor degree are located in West Philadelphia west of University City and north of Center City - these are the same areas where the log transformed median home values are lowest. 
+
+Conversely, the PCTSINGLES variable does not appear to be correlated with our dependent variable. This is because the percent of housing units that are detached single family homes tends to be low in center city, and high in Northwest Philadelphia which are both neighborhoods with high median home prices values. 
+
+The PCTBACHMOR and PCTVACANT appear to have a strong negative correlation, as areas with a high PCTVACANT rate also have a low PCTBACHMOR rate. Conversely, areas with a high PCTBACHMOR rate have a low PCTVACANT rate. This negative correlation indicates that there may be multicollinearity between these two variables. We will check the strength of this correlation using Pearsons’s correlation to determine if this multicollinearity could be an issue in our regression.
+
 
 ```{r variables maps, fig.width = 12}
 # Change designs
@@ -229,7 +274,14 @@ grid.arrange(pctvacant_map, pctsingles_map, pctbachmor_map, lnnbelpov100_map)
 
 ```
 
-# Pearson correlations
+### Pearson correlations
+
+correlation between our dependent variables. For example, PCTBACHMOR is negatively correlated with LNBELPOV100 and PCTVACANT is positively correlated with LNBELPOV100.
+
+Despite the correlations, we can conclude that there is not severe multicollinearity. This is because the Pearson correlation values are all between 0.9 and -0.9. When Pearson correlation values are within this range we generally do not need to be concerned about multicollinearity. 
+
+The Pearson correlation value for the relationship between PCTBACHMOR and PCTVACANT is -0.3 supporting our previous conclusion that there is a negative correlation between the variables. However, since the Pearson correlation is more than -0.9 we do not need to be concerned about severe multicollinearity. 
+
 
 ```{r pearson}
 predictors <- data %>% dplyr::select(PCTBACHMOR, PCTVACANT, PCTSINGLES, LNBELPOV100)
@@ -242,13 +294,28 @@ predictors %>%
 
 # Regression Analysis
 
+When we review our regression analysis we start by examining the f-ratio. The f-ratio is 840.9, and the p-value associated with the f-ratio is less than 0.0001. Thus, we can reject the null hypothesis that all β coefficients are zero. 
+
+After reviewing the f-ratio, we proceed to reviewing the β coefficients, standard errors, t values, and p-scores for our four dependent variables. All four dependent variables have a p-score which indicates that the β coefficients are statistically significant and we can reject the null hypothesis that the coefficients of any of the β coefficients are equal to 0. There is a statistically negative relationship between the Percent of Vacant homes and the log of median home value. There is also a statistically negative relationship between the log of the number of households living in poverty and the log of median home value. There is statistically positive relationship between the percent of homes which are single family homes and the log of the median home value. There is also a statistically positive relationship between the percent of individuals with a bachelors degree and the log of the median home value.
+
+When review our Beta Coefficients it is important to remember that our dependent variable is log transform. For the percent of homes which are standalone single family homes, percent of homes which are vacant, and percent of individuals with a bachelor degree only the dependent variable is log transformed and the Beta Coefficients are less than 0.3. Thus, we can conclude that as our independent variables go up by 1 unit, the expected change in median home value is approximately $100𝛽_1%$. Thus, as the percent of homes which are vacant goes up by 1% the median home value will decrease by approximately 1.917%. As the percent of homes which are standalone single family homes goes up by 1% the median home value will increase by approximately 0.298%. As the percent of individuals who have a bachelors degree goes up by 1% the median home value will increase by approximately 2.091%. 
+
+For the population below the poverty line both our independent variable and our dependent variable are both log transformed. Thus, as the population below the poverty line increases by 1% the median home value will decrease by approximately $(1.01^𝛽_1 −1)∙100%$, i.e: the median home value will decrease by approximately 0.07848%.
+
+The R-squared value is 0.6623, indicating that 66.23% of the variance in our dependent variable is explained by our four independent variables. 33.77% of the variance is not explained by our four independent variables. Our adjusted R-squared value is 0.6615, indicating that 66.15% of the variance in our dependent variable is explained by our four independent variables after adjusting the r-squared to account for the model including more than one independent variable. 
+
 ```{r regression}
 ## Regression Results
 
 fit <-lm(LNMEDHVAL ~  PCTVACANT + PCTSINGLES + PCTBACHMOR + LNBELPOV100, data=data)
 
 summary(fit)
+```
 
+The table below shows an analysis of the variance table for our linear regression model. The Sum of Square Errors (SSE) for our model is 230.44. The Regression Sum of Squares (SSR) is equal to 451.745, and the Total Sum of Squares (SST) is equal to 672.185. We can calculate the $R^2$ for our model by dividing the SSR by the SST, i.e: 451.745 / 682.089 which equals 0.6623.
+
+
+``` {r anova}
 anova(fit)
 ```
 

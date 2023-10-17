@@ -16,8 +16,7 @@ knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
 ```
 
 ```{r packages}
-#tinytex::install_tinytex()
-
+#tinytex::install_tinytex(force=TRUE)
 
 library(here)
 library(tidyverse)
@@ -27,10 +26,7 @@ library(gridExtra)
 library(MASS)
 library(DAAG)
 library(corrr) 
-library(latex)
 library(tinytex)
-# another way to plot correlation plot
-# another way to plot correlation plot
 library(extrafont)
 
 windowsFonts(A = windowsFont("Times New Roman"))
@@ -112,14 +108,14 @@ Homoscedasticity refers to the variance of the residuals ε being constant regar
 No Multicollinearity which only applies to multiple regression, occurs when predictor variables are not strongly correlated with each other. Multicollinearity is when two or more predictors are very strongly correlated with each other: r > 0.8 or r < -0.8. If Multicollinearity is present in a model, it will become difficult for the model to estimate the relationship between each independent variable and the dependent variable independently making it difficult to identify significant predictors.
 One can check for this assumption by reviewing a correlation matrix of the predictors and check if r > 0.8 or r < -0.8. If two or more predictors are strongly correlated, include only one of them in the regression.
 
-Performing multiple regression requires one to estimate the values for a critical set of parameters. These parameters include σ2 which determines the amount of variability inherent in a regression model, a regression constant β_0  and one regression coefficient β_i for each independent variable in the model. The regression constant or the Intercept β_0 represents the mean value of the dependent variable when all the independent variables are equal to 0. The regression coefficient, as stated above, is interpreted as the amount by which the dependent variable changes as the independent variable increases by one unit (holding all other variables constant).
+Performing multiple regression requires one to estimate the values for a critical set of parameters. These parameters include $σ^2$ which determines the amount of variability inherent in a regression model, a regression constant $β_0$  and one regression coefficient $β_i$ for each independent variable in the model. The regression constant or the Intercept $β_0$ represents the mean value of the dependent variable when all the independent variables are equal to 0. The regression coefficient, as stated above, is interpreted as the amount by which the dependent variable changes as the independent variable increases by one unit (holding all other variables constant).
 
-SSE=∑▒(y_i-y ̂_i )^2 =∑▒[y_i-(β ̂_0+β ̂_1 x_1i+β ̂_2 x_2i+⋯+β ̂_k x_ki )]^2 
+In Multiple regression $σ^2$ is found with the following equation 
+$σ^2=SSE/(n-(k+1))=MSE$, where k = # predictors and n = # observations. Here, MSE stands for mean squared error.
 
-In Multiple regression σ^2 is found with the following equation 
-σ^2=SSE/(n-(k+1))=MSE, where k = # predictors and n = # observations. Here, MSE stands for mean squared error.
+$R^2$, often referred to as the Coefficient of Multiple Determination, is the proportion of observed variance in the dependent variable y that is explained by the model by all k predictors. Higher values of $R^2$ are indicative of a better model. $R^2$ is calculated as  $R^2=1-SSE/SST$ Where SSE is the sum of squared residuals and SST is the total variability in the dependent variable. Adjusted R2 is the R2 adjusted for the number of predictors in the model. Larger values for Adjusted $R^2$, like $R^2$, are also indicative of a better model. The equation for Adjusted $R^2$ is:
 
-R2, often referred to as the Coefficient of Multiple Determination, is the proportion of observed variance in the dependent variable y that is explained by the model by all k predictors. Higher values of R2 are indicative of a better model. R2 is calculated as  $R^2=1-SSE/SST$ Where SSE is the sum of squared residuals and SST is the total variability in the dependent variable. Adjusted R2 is the R2 adjusted for the number of predictors in the model. Larger values for Adjusted R2, like R2, are also indicative of a better model. The equation for Adjusted R2,
+$$R^2 adj = \frac{(n-l)R^2 - k} {n - (k + 1)}$$
 
 The Beta coefficient $β_i$ of each predictor may be interpreted as the amount by which the dependent variable changes as the independent variable increases by one unit (holding all other variables constant). The sign indicates whether the relationship between the dependent variable and the independent variables is positive (direct) or negative (inverse). It is important to look at the sign and value of $β_i$ when the coefficient is statistically significant (significantly different from zero). The variable $ε$ commonly referred to as the residual term or random error term in the model. The residual term $ε$ allows the regression line to fall above ($ε > 0$) or below ($ε < 0$). The actual data points. $ε$ is the difference between observed values of $y$ and the values of $y$ predicted by the regression model (denoted by $\widehat{y}$).
 

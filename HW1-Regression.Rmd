@@ -6,7 +6,7 @@ date: "2023-10-19"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
+install.packages("tinytex")
 library(here)
 library(tidyverse)
 library(kableExtra)
@@ -14,7 +14,10 @@ library(sf)
 library(gridExtra)
 library(MASS)
 library(DAAG)
-library(corrr)      # another way to plot correlation plot
+library(corrr) 
+library(latex)
+library(tinytex)
+# another way to plot correlation plot
 
 options(scipen = 999)
 ```
@@ -22,100 +25,99 @@ options(scipen = 999)
 # Introduction
 
 # Methods
+
 ## Data Cleaning
 
 The data set used in our analysis contains information from the 2000 US Census for Philadelphia, with neighborhood characteristic variables included for 1,720 block groups. Our analysis incorporates the following variables:
 
-- POLY_ID: Census Block Group ID
-- MEDHVAL: Median value of all owner occupied housing units
-- PCBACHMORE: Proportion of residents in Block Group with at least a bachelor’s degree
-- PCTVACANT: Proportion of housing units that are vacant
-- PCTSINGLES: Percent of housing units that are detached single family houses 
-- NBELPOV100: Number of households with incomes below 100% poverty level (i.e., number of households living in poverty)
-- MEDHHINC: Median household income
+-   POLY_ID: Census Block Group ID
+-   MEDHVAL: Median value of all owner occupied housing units
+-   PCBACHMORE: Proportion of residents in Block Group with at least a bachelor's degree
+-   PCTVACANT: Proportion of housing units that are vacant
+-   PCTSINGLES: Percent of housing units that are detached single family houses
+-   NBELPOV100: Number of households with incomes below 100% poverty level (i.e., number of households living in poverty)
+-   MEDHHINC: Median household income
 
 The original data set had 1,816 block groups and was cleaned using the following methods, which reduced to the total number of observations to 1,720:
 
-- Block groups where population < 40
-- Block groups where there are no housing units
-- Block groups where the median house value is lower than $10,000
-- One North Philadelphia block group which had a very high median house value (over \$800,000) and a very low median household income (less than \$8,000)
+-   Block groups where population \< 40
+-   Block groups where there are no housing units
+-   Block groups where the median house value is lower than \$10,000
+-   One North Philadelphia block group which had a very high median house value (over \$800,000) and a very low median household income (less than \$8,000)
 
 In this analysis, we will examine the relationships between our dependent variable, MEDHVAL, and the predictors PCBACHMORE, NBELPOV100, PCTVACANT, and PCTSINGLES.
 
 ## Exploratory Data Analysis
 
-We will examine the summary statistics and distributions of the data set’s variables, including the mean and standard deviation of our dependent variable and predictor variables.
+We will examine the summary statistics and distributions of the data set's variables, including the mean and standard deviation of our dependent variable and predictor variables.
 
 As part of our exploratory data analysis, we will examine the Pearson correlations between the predictors. A Pearson correlation is a standardized measurement of the strength and direction of the linear relationship between two variables. The correlation between two variables is calculated using the following equation:
 
 equation
 
-The Pearson correlation value ranges between -1 to 1, with no units of measurement attached, and the observed variables are interchangeable between the x axis and y axis. A value of -1 represents a perfect negative linear relationship and a value of 1 represents a perfect positive linear relationship - in either case, points on a graph would appear in a straight line with either a negative or positive slope, respectively. 
+The Pearson correlation value ranges between -1 to 1, with no units of measurement attached, and the observed variables are interchangeable between the x axis and y axis. A value of -1 represents a perfect negative linear relationship and a value of 1 represents a perfect positive linear relationship - in either case, points on a graph would appear in a straight line with either a negative or positive slope, respectively.
 
-A Pearson correlation value of 0 indicates that there is no linear relationship between two variables. However, a different type of relationship can exist, such as an exponential or quadratic relationship, that the Pearson correlation does not measure. 
+A Pearson correlation value of 0 indicates that there is no linear relationship between two variables. However, a different type of relationship can exist, such as an exponential or quadratic relationship, that the Pearson correlation does not measure.
 
 ## Multiple Regression Analysis
 
-Regression or Ordinary Least Square (OLS) regression is a statistical method used to examine the relationship between a variable of interest (dependent variable) and one or more explanatory variable (predictors). Regression tests the strength of the relationship, the direction of the relationship (positive. Negative, or 0) and goodness of model fit (how well a model will predict a future set of observations). Regression also allows the ability to calculate the amount by which your dependent variable changes when a predictor variable changes by one unit (holding all other predictors constant). Although, if an explanatory variable is a significant predictor of the dependent variable, it does not imply causation. 
+Regression or Ordinary Least Square (OLS) regression is a statistical method used to examine the relationship between a variable of interest (dependent variable) and one or more explanatory variable (predictors). Regression tests the strength of the relationship, the direction of the relationship (positive. Negative, or 0) and goodness of model fit (how well a model will predict a future set of observations). Regression also allows the ability to calculate the amount by which your dependent variable changes when a predictor variable changes by one unit (holding all other predictors constant). Although, if an explanatory variable is a significant predictor of the dependent variable, it does not imply causation.
 
-When we are dealing with more than one predictor, we run a multiple regression. In Multiple Regression Analysis we have K>1 predictors (independent variable), so rather than getting a line in 2 dimensions from a linear regression, we get a surface in K+1 dimensions (“+1” accounts for the dependent variable).  Here, each independent variable will have its own slope coefficient which indicates the relationship of that particular predictor with the dependent variable, controlling for all other independent variables in the regression.
+When we are dealing with more than one predictor, we run a multiple regression. In Multiple Regression Analysis we have $K>1$ predictors (independent variable), so rather than getting a line in 2 dimensions from a linear regression, we get a surface in $K+1$ dimensions ($+1$ accounts for the dependent variable). Here, each independent variable will have its own slope coefficient which indicates the relationship of that particular predictor with the dependent variable, controlling for all other independent variables in the regression.
 
-To examine the relationship between median house values and several neighborhood characteristics we will need to run a multiple regression. Using Philadelphia data at the Census block group level we regressed Natural Log of Median value of all owner occupied housing units (LNMEDHVAL) on the proportion of housing units that are vacant (PCTVACANT), the percent of housing units that are detached single family houses (PCTSINGLES), proportion of residents in Block Group with at least a bachelor’s degree (PCTBACHMOR), and the Natural Log of Number of households with incomes below 100% poverty level (LNNBELPOV100). The equation is stated as:
+To examine the relationship between median house values and several neighborhood characteristics we will need to run a multiple regression. Using Philadelphia data at the Census block group level we regressed Natural Log of Median value of all owner occupied housing units (LNMEDHVAL) on the proportion of housing units that are vacant (PCTVACANT), the percent of housing units that are detached single family houses (PCTSINGLES), proportion of residents in Block Group with at least a bachelor's degree (PCTBACHMOR), and the Natural Log of Number of households with incomes below 100% poverty level (LNNBELPOV100). The equation is stated as:
 
-LNMEDHHINC=β_0+β_1 PCTVACANT+β_2 PCTSINGLES+β_3 PCTBACHMOR+β_4 LNNBELPOV100+ ε
+$$LNMEDHHINC=β_0+β_1 PCTVACANT+β_2 PCTSINGLES+β_3 PCTBACHMOR+β_4 LNNBELPOV100+ ε $$
 
-The Beta coefficient β_i of each predictor may be interpreted as the amount by which the dependent variable changes as the independent variable increases by one unit (holding all other variables constant). The sign indicates whether the relationship between the dependent variable and the independent variables is positive (direct) or negative (inverse). It is important to look at the sign and value of β_i when the coefficient is statistically significant (significantly different from zero). The variable ε commonly referred to as the residual term or random error term in the model. The residual term ε allows the regression line to fall above (ε > 0) or below (ε < 0). The actual data points. ε is the difference between observed values of y and the values of y predicted by the regression model (denoted by y ̂).
+The Beta coefficient $β_i$ of each predictor may be interpreted as the amount by which the dependent variable changes as the independent variable increases by one unit (holding all other variables constant). The sign indicates whether the relationship between the dependent variable and the independent variables is positive (direct) or negative (inverse). It is important to look at the sign and value of $β_i$ when the coefficient is statistically significant (significantly different from zero). The variable $ε$ commonly referred to as the residual term or random error term in the model. The residual term $ε$ allows the regression line to fall above ($ε > 0$) or below ($ε < 0$). The actual data points. $ε$ is the difference between observed values of $y$ and the values of $y$ predicted by the regression model (denoted by $\widehat{y}$).
 
-When using regression to model the relationships between a dependent variable and predictors certain conditions must be met, these conditions are referred to as assumptions. Prior to making conclusions about the model estimates or using the model for predictions, certain assumptions must be met.  These assumptions include Linearity, Independence of Observations, Normality of Residuals, Homoscedasticity, and No Multicollinearity. 
+### Regression Assumptions
 
-Linearity assumes that there is a linear relationship between the dependent variable Y and each of the predictors X. Linearity can be checked by creating scatterplots between y and each of the predictor x. Possible fixes if the Linearity assumption is not met are to transform variables (e.g., log) or run a non-linear (e.g., polynomial) model. 
+Prior to making conclusions about the model estimates or using the model for predictions, certain assumptions must be met. These assumptions include Linearity, Independence of Observations, Normality of Residuals, Homoscedasticity, and No Multicollinearity.
 
-Independence of Observations assumes that there should be no spatial, temporal, or other forms of dependence in the data. This means that each observation from the data must be independent of the others. In order to test for Independence of Observations one can look at the Moran’s I of the residual, or the values of y to examine whether regression residuals, or the dependent variable itself, are spatially autocorrelated. If this assumption is not met one must run a spatial regression e.g., spatial lag, spatial error, geographically weighted regression) instead of OLS regression. 
+**Linearity** assumes that there is a linear relationship between the dependent variable $y$ and each of the predictors $x$. Linearity can be checked by creating scatterplots between y and each of the predictor $x$. Possible fixes if the Linearity assumption is not met are to transform variables (e.g., log) or run a non-linear (e.g., polynomial) model.
 
-Normality of Residuals is violated because either the dependent variable and/or independent variables are themselves non-normal, and/or the linearity assumption is violated. This assumption is not ass important as the 3 previously stated assumptions, especially when dealing with a large sample size. In this context, a large sample size is generally defined as having 30+ observations with 10 additional observations for every additional predictor after the first one. One can test for this assumption by looking at the histogram of residuals to see if they are normal. If this assumption is violated possible fixes include removing outliers and transforming variables (e.g., log).
+**Independence of Observations** assumes that there should be no spatial, temporal, or other forms of dependence in the data. This means that each observation from the data must be independent of the others. In order to test for Independence of Observations one can look at the Moran's I of the residual, or the values of $y$ to examine whether regression residuals, or the dependent variable itself, are spatially autocorrelated. If this assumption is not met one must run a spatial regression e.g., spatial lag, spatial error, geographically weighted regression) instead of OLS regression.
 
-Homoscedasticity refers to the variance of the residuals ε being constant regardless of the values of each x (or the values of y ̂, i.e., values of y predicted by the model). When this assumption is violated, Heteroscedasticity is present meaning that the residuals ε differs across all values of the independent variable. This assumption can be checked by looking at scatterplots of standardized residuals against each predictor to see if variance of residuals remains the same for different values of each predictor. Violation of this assumption implies Heteroscedasticity which often means that that there is systematic under-or over-prediction happening in the model. Including additional predictors, running a spatial regression, transforming variables, and removing outliers may help reduce Heteroscedasticity.
-
-No Multicollinearity which only applies to multiple regression, occurs when predictor variables are not strongly correlated with each other. Multicollinearity is when two or more predictors are very strongly correlated with each other: r > 0.9 or r < -0.9. If Multicollinearity is present in a model, it will become difficult for the model to estimate the relationship between each independent variable and the dependent variable independently making it difficult to identify significant predictors.
-One can check for this assumption by reviewing a correlation matrix of the predictors and check if r > 0.8 or r < -0.8. If two or more predictors are strongly correlated, include only one of them in the regression.
-
-Performing multiple regression requires one to estimate the values for a critical set of parameters. These parameters include σ2 which determines the amount of variability inherent in a regression model, a regression constant β_0  and one regression coefficient β_i for each independent variable in the model. The regression constant or the Intercept β_0 represents the mean value of the dependent variable when all the independent variables are equal to 0. The regression coefficient, as stated above, is interpreted as the amount by which the dependent variable changes as the independent variable increases by one unit (holding all other variables constant).
-
-SSE=∑▒(y_i-y ̂_i )^2 =∑▒[y_i-(β ̂_0+β ̂_1 x_1i+β ̂_2 x_2i+⋯+β ̂_k x_ki )]^2 
-
-In Multiple regression σ^2 is found with the following equation 
-σ^2=SSE/(n-(k+1))=MSE, where k = # predictors and n = # observations. Here, MSE stands for mean squared error.
+**Normality of Residuals** is violated when either the dependent variable and/or independent variables are themselves non-normal, and/or the linearity assumption is violated. This assumption is not as important as the 3 previously stated assumptions, especially when dealing with a large sample size. In this context, a large sample size is generally defined as having 30+ observations with 10 additional observations for every additional predictor after the first one. One can test for this assumption by looking at the histogram of residuals to see if they are normal. If this assumption is violated possible fixes include removing outliers and transforming variables (e.g., log).
 
 
-R2, often referred to as the Coefficient of Multiple Determination, is the proportion of observed variance in the dependent variable y that is explained by the model by all k predictors. Higher values of R2 are indicative of a better model. R2 is calculated as  R^2=1-SSE/SST  Where SSE is the sum of squared residuals and SST is the total variability in the dependent variable. Adjusted R2 is the R2 adjusted for the number of predictors in the model. Larger values for Adjusted R2, like R2, are also indicative of a better model. The equation for Adjusted R2,
+**Homoscedasticity** refers to the variance of the residuals ε being constant regardless of the values of each $x$ (or the values of $\widehat{y}$, i.e., values of y predicted by the model). When this assumption is violated, Heteroscedasticity is present. When Heteroscedasticity occurs the residuals ε differ across all values of the independent variables, meaning that there is systematic under-or over-predictions happening in the model. This assumption can be checked by looking at scatterplots of standardized residuals against each predictor to see if variance of residuals remains the same for different values of each predictor. Including additional predictors, running a spatial regression, transforming variables, and removing outliers may help reduce Heteroscedasticity.
 
-R_adj^2=((n-1) R^2-k)/(n-(k+1))
+**No Multicollinearity** which only applies to multiple regression, occurs when predictor variables are not strongly correlated with each other. Multicollinearity is when two or more predictors are very strongly correlated with each other: $r > 0.9$ or $r < -0.9$. If Multicollinearity is present in a model, it will become difficult for the model to estimate the relationship between each independent variable and the dependent variable independently making it difficult to identify significant predictors. One can check for this assumption by reviewing a correlation matrix of the predictors and check if $r > 0.9$ or $r < -0.9$. If two or more predictors are strongly correlated, include only one of them in the regression.
 
-When stating the hypothesis we first look at F-Ratio which tests the overall significance of the model by testing the Null Hypothesis  〖H_0: β〗_i=0  that none of the independent variables in the model is a significant predictor of the dependent variable (LNMEDHVAL) against the Alternative Hypothesis 〖H_a: β〗_i≠0 that at least one of the independent variables is a significant predictor of the dependent variable (LNMEDHVAL). We will look at the F-ratio for the chosen predictors 〖 β〗_1PCTVACANT, 〖 β〗_2PCTSINGLES, 〖 β〗_3PCTBACHMOR, 〖 β〗_4LNNBELPOV100.  
+### Multiple Regression Parameters & Estimation
 
-.
-PCTVACANT:
-〖H_0: β〗_1=0: Implies that the variable PCTVACANT is not a significant predictor of the dependent variable (LNMEDHVAL).
-〖H_a: β〗_i≠0: Implies that the variable PCTVACANT is a significant predictor of the dependent variable (LNMEDHVAL).
+Performing multiple regression requires one to estimate the values for a critical set of parameters. These parameters include $σ^2$ which determines the amount of variability inherent in a regression model, a regression constant $β_0$ and one regression coefficient $β_i$ for each independent variable in the model. The regression constant or the Intercept $β_0$ represents the mean value of the dependent variable when all the independent variables are equal to 0. The regression coefficient, as stated above, is interpreted as the amount by which the dependent variable changes as the independent variable increases by one unit (holding all other variables constant). In multiple regression we estimate these parameters by finding the values $β_0$ and $β_i$ that minimize the Sum of Squared Errors (SSE) of prediction. Meaning, the differences between a observation's actual score on the dependent value and the score that's predicted for them using the actual scores on the independent variables. SSE will produce the Least Square estimates $\widehat{\beta_0}$ & $\widehat{\beta_k}$. The equation for SSE is:
 
-PCTSINGLES:
-〖H_0: β〗_2=0: Implies that the variable PCTSINGLES is not a significant predictor of the dependent variable (LNMEDHVAL).
-〖H_a: β〗_2≠0: Implies that the variable PCTSINGLES is a significant predictor of the dependent variable (LNMEDHVAL).
+SSE=∑▒(y_i-y ̂\_i )\^2 =∑▒[y_i-(β ̂\_0+β ̂\_1 x_1i+β ̂\_2 x_2i+⋯+β ̂\_k x_ki )]\^2
 
-PCTBACHMOR:
-〖H_0: β〗_3=0: Implies that the variable PCTBACHMOR is not a significant predictor of the dependent variable (LNMEDHVAL).
-〖H_a: β〗_3≠0: Implies that the variable PCTBACHMOR is a significant predictor of the dependent variable (LNMEDHVAL).
+$hat{\beta}_0$ In Multiple regression $σ^2$ is found with the following equation $σ^2 = \frac{SSE}{n-(k+1)} = MSE$, where k = \# predictors and n = \# observations. Here, MSE stands for mean squared error.
 
-LNNBELPOV100:
-〖H_0: β〗_4=0: Implies that the variable LNNBELPOV100 is not a significant predictor of the dependent variable (LNMEDHVAL).
-〖H_a: β〗_4≠0: Implies that the variable LNNBELPOV100 is a significant predictor of the dependent variable (LNMEDHVAL).
+### Coefficient of Multiple Determination $R^2$
 
+$R^2$, often referred to as the Coefficient of Multiple Determination, is the proportion of observed variance in the dependent variable y that is explained by the model by all k predictors. Higher values of R2 are indicative of a better model. $R^2$ is calculated as $R^2 = 1 - \frac{SSE}{SST}$ Where SSE is the sum of squared residuals and SST is the total variability in the dependent variable. Adjusted $R^2$ is the $R^2$ adjusted for the number of predictors in the model. Larger values for Adjusted $R^2$, like $R^2$, are also indicative of a better model. The equation for Adjusted $R^2$,
 
-Stepwise regression is a data mining method which selects predictors based on the following criteria.  1) P-values are below a certain threshold (variables where the P-value < 0.1) and 2) the smallest value of the Akaike Information Criterion (AIC), which measures the relative quality of statistical models. There are a number of limitations when using Stepwise regression which include: 1) the final model is not guaranteed to be optimal in any specified sense. 2) The stepwise procedure produces a single final model, although there are often several equally good models. 3) it does not consider a researcher’s knowledge of the predictors. 4) Although the order in which the variables are removed or added can provide valuable information, it’s important not to over interpret the order. 5) one should not conclude that all the important variables for predicting y have been identified or that all unimportant variables have been eliminated.
+$$R_{adj}^2 = \frac{(n-1)R^2 - k}{n-(k+1)}$$
 
+### Hypothesis Testing
 
-K-fold
+When stating the hypothesis we first look at F-Ratio which tests the overall significance of the model by testing the Null Hypothesis $H_0: β_i=0$ that none of the independent variables in the model is a significant predictor of the dependent variable (LNMEDHVAL) against the Alternative Hypothesis $H_a: β_i≠0$ that at least one of the independent variables is a significant predictor of the dependent variable (LNMEDHVAL). We will look at the F-ratio for the chosen predictors $β_1PCTVACANT$, \$ β_2PCTSINGLES\$, $β_3PCTBACHMOR$, $β_4LNNBELPOV100$.
+
+. PCTVACANT: $H_0: β_1=0$: Implies that the variable PCTVACANT is not a significant predictor of the dependent variable (LNMEDHVAL). $H_a: β_1≠0$: Implies that the variable PCTVACANT is a significant predictor of the dependent variable (LNMEDHVAL).
+
+PCTSINGLES: $H_0: β_2=0$: Implies that the variable PCTSINGLES is not a significant predictor of the dependent variable (LNMEDHVAL). $H_a: β_2≠0$: Implies that the variable PCTSINGLES is a significant predictor of the dependent variable (LNMEDHVAL).
+
+PCTBACHMOR: $H_0: β_3=0$: Implies that the variable PCTBACHMOR is not a significant predictor of the dependent variable (LNMEDHVAL). $H_a: β_3≠0$: Implies that the variable PCTBACHMOR is a significant predictor of the dependent variable (LNMEDHVAL).
+
+LNNBELPOV100: $H_0: β_4=0$: Implies that the variable LNNBELPOV100 is not a significant predictor of the dependent variable (LNMEDHVAL). $H_a: β_4≠0$: Implies that the variable LNNBELPOV100 is a significant predictor of the dependent variable (LNMEDHVAL).
+
+### Stepwise Regression
+
+Stepwise regression is a data mining method which selects predictors based on the following criteria. 1) P-values are below a certain threshold (variables where the P-value \< 0.1) and 2) the smallest value of the Akaike Information Criterion (AIC), which measures the relative quality of statistical models. There are a number of limitations when using Stepwise regression which include: 1) the final model is not guaranteed to be optimal in any specified sense. 2) The stepwise procedure produces a single final model, although there are often several equally good models. 3) it does not consider a researcher's knowledge of the predictors. 4) Although the order in which the variables are removed or added can provide valuable information, it's important not to over interpret the order. 5) one should not conclude that all the important variables for predicting $y$ have been identified or that all unimportant variables have been eliminated.
+
+### K-Fold Cross-Validation
+
 ## Additional Analyses
 
 ## Software
@@ -158,7 +160,7 @@ left_join(summary_stats_mean, summary_stats_sd, by='variable') %>%
   
 ```
 
-# quick code that checks which variables have 0 values for logarithmic transformation 
+# quick code that checks which variables have 0 values for logarithmic transformation
 
 ```{r 0_value_check2}
 zero_columns <- apply(data, 2, function(col) any(col == 0)) 
@@ -177,13 +179,11 @@ data$LNPCTVACANT <- log(1 + data$PCTVACANT)
 data$LNPCTSINGLES <- log(1 + data$PCTSINGLES)
 ```
 
-
 ```{r hist_MEDHVAL}
 par(mfrow=c(1,2))
 hist(data$MEDHVAL,breaks=100)
 hist(data$LNMEDHVAL,breaks=100)
 ```
-
 
 ```{r hist_PCTBACHMOR}
 par(mfrow=c(1,2))
@@ -191,20 +191,17 @@ hist(data$PCTBACHMOR,breaks=100)
 hist(data$LNPCTBACHMOR,breaks=100)
 ```
 
-
 ```{r hist_NBELPOV100}
 par(mfrow=c(1,2))
 hist(data$NBELPOV100,breaks=100)
 hist(data$LNBELPOV100,breaks=100)
 ```
 
-
 ```{r hist_PCTVACANT}
 par(mfrow=c(1,2))
 hist(data$PCTVACANT,breaks=100)
 hist(data$LNPCTVACANT,breaks=100)
 ```
-
 
 ```{r hist_PCTSINGLES}
 par(mfrow=c(1,2))
@@ -313,17 +310,18 @@ anova(fit)
 
 ## Regression Assumptions Checks
 
-In this section, we will discuss testing model assumptions. We have already examined the variable distributions in a prior section. 
+In this section, we will discuss testing model assumptions. We have already examined the variable distributions in a prior section.
 
 ### Scatter Plots - Linear Relationships Between Variables
 
 <!-- This first and second para may be unnecessary -->
-When running linear regressions, a core assumption is that there is a linear relationship between the dependent variable and each of the predictor variables. To check this assumption, we plot the dependent variable with each of the predictor variables in a scatter plot. 
+
+When running linear regressions, a core assumption is that there is a linear relationship between the dependent variable and each of the predictor variables. To check this assumption, we plot the dependent variable with each of the predictor variables in a scatter plot.
 
 In cases where this assumption is not met, log transformations are often used. Based on the results of our variable distributions, we have already conducted log transformations for the dependent variable for median home value, now LNMEDHVAL, and for the predictor variable for number of households below poverty, now LNNBELPOV100.
 
-The following scatter plots show the relationship between the dependent variable, LNMEDHVAL, and each the predictor variables LNNBELPOV100, PCTBACHMOR, PCTVACANT, and PCTSINGLES. There does not appear to be a linear relationship between LNMEDHVAL and the predictor variables, even with log transformations used. The variables all appear heavily skewed - the relationship between LNNBELPOV and LNBELPOV100 appears to be  negatively skewed, and the individual relationship between the other three predictors and LNMEDHVAL appears to be heavily positively skewed.
- 
+The following scatter plots show the relationship between the dependent variable, LNMEDHVAL, and each the predictor variables LNNBELPOV100, PCTBACHMOR, PCTVACANT, and PCTSINGLES. There does not appear to be a linear relationship between LNMEDHVAL and the predictor variables, even with log transformations used. The variables all appear heavily skewed - the relationship between LNNBELPOV and LNBELPOV100 appears to be negatively skewed, and the individual relationship between the other three predictors and LNMEDHVAL appears to be heavily positively skewed.
+
 ```{r scatter}
 par(mfrow=c(2,2))
 plot(data$LNBELPOV100, data$LNMEDHVAL)
@@ -335,7 +333,8 @@ plot(data$PCTSINGLES, data$LNMEDHVAL)
 ###Histogram of the standardized residuals
 
 <!-- This first para may be unnecessary -->
-Another assumption when running linear regression is that regression residuals are distributed normally. However, this assumption of normality is not considered critical in a regression, especially for data sets with a large number of observations. 
+
+Another assumption when running linear regression is that regression residuals are distributed normally. However, this assumption of normality is not considered critical in a regression, especially for data sets with a large number of observations.
 
 In order to compare residuals for different observations, we standardize the residuals through dividing a residual by its standard error. Standardizing allows us to observe how many standard deviations a residual is from our model's estimate
 
@@ -356,14 +355,13 @@ hist(data$stdres, breaks=100)
 
 ```
 
-
 ###Scatter Plot - Standardized Residual by Predicted Value
 
 <!-- This first para may be unnecessary -->
 
-An additional core assumption of linear regression is that there is constant variance in residuals compared to the predicted values of the model - this relationship is referred to as homoscedastic. If non-constant variance is observed, the relationship is heteroscedastic. 
+An additional core assumption of linear regression is that there is constant variance in residuals compared to the predicted values of the model - this relationship is referred to as homoscedastic. If non-constant variance is observed, the relationship is heteroscedastic.
 
-Given that there multiple predictors, we can plot the standardized residuals of the model by our predicted values of LNMEDHVAL. The scatter plot of standardized residuals appears to show a slight heteroscedastic relationship, based on a small "bow-tie" shape present around the predicted value of 11.5. 
+Given that there multiple predictors, we can plot the standardized residuals of the model by our predicted values of LNMEDHVAL. The scatter plot of standardized residuals appears to show a slight heteroscedastic relationship, based on a small "bow-tie" shape present around the predicted value of 11.5.
 
 Outliers also appear to be present based on our scatter plot - there are several positive standardized residuals above 4 standard deviations above 0 and at least one standardized residual beyond -6 standard deviation below 0.
 
@@ -374,11 +372,13 @@ The standardized residuals also appear to be heavily clustered around between th
 plot(data$predvals, data$stdres, xlab = "Predicted Values ", ylab = "Standardized Residuals ", main = "Predicted Values vs. Standardized Residuals ")
 
 ```
+
 ###Spatial Autocorrelation of Variables
 
-Based on the maps of the dependent variable LNMEDHVAL and the predictor variables, we can estimate whether observations of each variable appear to show spatial autocorrelation - defined as observing the degree to which similar values cluster near each other. Our variables may appear to spatial autocorrelation  
+Based on the maps of the dependent variable LNMEDHVAL and the predictor variables, we can estimate whether observations of each variable appear to show spatial autocorrelation - defined as observing the degree to which similar values cluster near each other. Our variables may appear to spatial autocorrelation
 
 ###Choropleth map of the standardized regression residuals
+
 ```{r resid map}
 
 map2 <- cbind(map, data %>% dplyr::select(stdres))
@@ -400,8 +400,6 @@ ggplot()+
 ## Additional Models
 
 ###Stepwise Regression
-
-
 
 ```{r plot_stepwise}
 
@@ -434,7 +432,6 @@ rmse_both <- cbind(rmse1, rmse2)
 rmse_both %>% kbl() %>% kable_minimal(full_width = FALSE)
 
 ```
-
 
 ## Additional Models
 

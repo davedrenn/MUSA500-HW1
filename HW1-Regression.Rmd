@@ -57,6 +57,65 @@ A Pearson correlation value of 0 indicates that there is no linear relationship 
 
 ## Multiple Regression Analysis
 
+Regression or Ordinary Least Square (OLS) regression is a statistical method used to examine the relationship between a variable of interest (dependent variable) and one or more explanatory variable (predictors). Regression tests the strength of the relationship, the direction of the relationship (positive. Negative, or 0) and goodness of model fit (how well a model will predict a future set of observations). Regression also allows the ability to calculate the amount by which your dependent variable changes when a predictor variable changes by one unit (holding all other predictors constant). Although, if an explanatory variable is a significant predictor of the dependent variable, it does not imply causation. 
+
+When we are dealing with more than one predictor, we run a multiple regression. In Multiple Regression Analysis we have K>1 predictors (independent variable), so rather than getting a line in 2 dimensions from a linear regression, we get a surface in K+1 dimensions (“+1” accounts for the dependent variable).  Here, each independent variable will have its own slope coefficient which indicates the relationship of that particular predictor with the dependent variable, controlling for all other independent variables in the regression.
+
+To examine the relationship between median house values and several neighborhood characteristics we will need to run a multiple regression. Using Philadelphia data at the Census block group level we regressed Natural Log of Median value of all owner occupied housing units (LNMEDHVAL) on the proportion of housing units that are vacant (PCTVACANT), the percent of housing units that are detached single family houses (PCTSINGLES), proportion of residents in Block Group with at least a bachelor’s degree (PCTBACHMOR), and the Natural Log of Number of households with incomes below 100% poverty level (LNNBELPOV100). The equation is stated as:
+
+LNMEDHHINC=β_0+β_1 PCTVACANT+β_2 PCTSINGLES+β_3 PCTBACHMOR+β_4 LNNBELPOV100+ ε
+
+The Beta coefficient β_i of each predictor may be interpreted as the amount by which the dependent variable changes as the independent variable increases by one unit (holding all other variables constant). The sign indicates whether the relationship between the dependent variable and the independent variables is positive (direct) or negative (inverse). It is important to look at the sign and value of β_i when the coefficient is statistically significant (significantly different from zero). The variable ε commonly referred to as the residual term or random error term in the model. The residual term ε allows the regression line to fall above (ε > 0) or below (ε < 0). The actual data points. ε is the difference between observed values of y and the values of y predicted by the regression model (denoted by y ̂).
+
+When using regression to model the relationships between a dependent variable and predictors certain conditions must be met, these conditions are referred to as assumptions. Prior to making conclusions about the model estimates or using the model for predictions, certain assumptions must be met.  These assumptions include Linearity, Independence of Observations, Normality of Residuals, Homoscedasticity, and No Multicollinearity. 
+
+Linearity assumes that there is a linear relationship between the dependent variable Y and each of the predictors X. Linearity can be checked by creating scatterplots between y and each of the predictor x. Possible fixes if the Linearity assumption is not met are to transform variables (e.g., log) or run a non-linear (e.g., polynomial) model. 
+
+Independence of Observations assumes that there should be no spatial, temporal, or other forms of dependence in the data. This means that each observation from the data must be independent of the others. In order to test for Independence of Observations one can look at the Moran’s I of the residual, or the values of y to examine whether regression residuals, or the dependent variable itself, are spatially autocorrelated. If this assumption is not met one must run a spatial regression e.g., spatial lag, spatial error, geographically weighted regression) instead of OLS regression. 
+
+Normality of Residuals is violated because either the dependent variable and/or independent variables are themselves non-normal, and/or the linearity assumption is violated. This assumption is not ass important as the 3 previously stated assumptions, especially when dealing with a large sample size. In this context, a large sample size is generally defined as having 30+ observations with 10 additional observations for every additional predictor after the first one. One can test for this assumption by looking at the histogram of residuals to see if they are normal. If this assumption is violated possible fixes include removing outliers and transforming variables (e.g., log).
+
+Homoscedasticity refers to the variance of the residuals ε being constant regardless of the values of each x (or the values of y ̂, i.e., values of y predicted by the model). When this assumption is violated, Heteroscedasticity is present meaning that the residuals ε differs across all values of the independent variable. This assumption can be checked by looking at scatterplots of standardized residuals against each predictor to see if variance of residuals remains the same for different values of each predictor. Violation of this assumption implies Heteroscedasticity which often means that that there is systematic under-or over-prediction happening in the model. Including additional predictors, running a spatial regression, transforming variables, and removing outliers may help reduce Heteroscedasticity.
+
+No Multicollinearity which only applies to multiple regression, occurs when predictor variables are not strongly correlated with each other. Multicollinearity is when two or more predictors are very strongly correlated with each other: r > 0.9 or r < -0.9. If Multicollinearity is present in a model, it will become difficult for the model to estimate the relationship between each independent variable and the dependent variable independently making it difficult to identify significant predictors.
+One can check for this assumption by reviewing a correlation matrix of the predictors and check if r > 0.8 or r < -0.8. If two or more predictors are strongly correlated, include only one of them in the regression.
+
+Performing multiple regression requires one to estimate the values for a critical set of parameters. These parameters include σ2 which determines the amount of variability inherent in a regression model, a regression constant β_0  and one regression coefficient β_i for each independent variable in the model. The regression constant or the Intercept β_0 represents the mean value of the dependent variable when all the independent variables are equal to 0. The regression coefficient, as stated above, is interpreted as the amount by which the dependent variable changes as the independent variable increases by one unit (holding all other variables constant).
+
+SSE=∑▒(y_i-y ̂_i )^2 =∑▒[y_i-(β ̂_0+β ̂_1 x_1i+β ̂_2 x_2i+⋯+β ̂_k x_ki )]^2 
+
+In Multiple regression σ^2 is found with the following equation 
+σ^2=SSE/(n-(k+1))=MSE, where k = # predictors and n = # observations. Here, MSE stands for mean squared error.
+
+
+R2, often referred to as the Coefficient of Multiple Determination, is the proportion of observed variance in the dependent variable y that is explained by the model by all k predictors. Higher values of R2 are indicative of a better model. R2 is calculated as  R^2=1-SSE/SST  Where SSE is the sum of squared residuals and SST is the total variability in the dependent variable. Adjusted R2 is the R2 adjusted for the number of predictors in the model. Larger values for Adjusted R2, like R2, are also indicative of a better model. The equation for Adjusted R2,
+
+R_adj^2=((n-1) R^2-k)/(n-(k+1))
+
+When stating the hypothesis we first look at F-Ratio which tests the overall significance of the model by testing the Null Hypothesis  〖H_0: β〗_i=0  that none of the independent variables in the model is a significant predictor of the dependent variable (LNMEDHVAL) against the Alternative Hypothesis 〖H_a: β〗_i≠0 that at least one of the independent variables is a significant predictor of the dependent variable (LNMEDHVAL). We will look at the F-ratio for the chosen predictors 〖 β〗_1PCTVACANT, 〖 β〗_2PCTSINGLES, 〖 β〗_3PCTBACHMOR, 〖 β〗_4LNNBELPOV100.  
+
+.
+PCTVACANT:
+〖H_0: β〗_1=0: Implies that the variable PCTVACANT is not a significant predictor of the dependent variable (LNMEDHVAL).
+〖H_a: β〗_i≠0: Implies that the variable PCTVACANT is a significant predictor of the dependent variable (LNMEDHVAL).
+
+PCTSINGLES:
+〖H_0: β〗_2=0: Implies that the variable PCTSINGLES is not a significant predictor of the dependent variable (LNMEDHVAL).
+〖H_a: β〗_2≠0: Implies that the variable PCTSINGLES is a significant predictor of the dependent variable (LNMEDHVAL).
+
+PCTBACHMOR:
+〖H_0: β〗_3=0: Implies that the variable PCTBACHMOR is not a significant predictor of the dependent variable (LNMEDHVAL).
+〖H_a: β〗_3≠0: Implies that the variable PCTBACHMOR is a significant predictor of the dependent variable (LNMEDHVAL).
+
+LNNBELPOV100:
+〖H_0: β〗_4=0: Implies that the variable LNNBELPOV100 is not a significant predictor of the dependent variable (LNMEDHVAL).
+〖H_a: β〗_4≠0: Implies that the variable LNNBELPOV100 is a significant predictor of the dependent variable (LNMEDHVAL).
+
+
+Stepwise regression is a data mining method which selects predictors based on the following criteria.  1) P-values are below a certain threshold (variables where the P-value < 0.1) and 2) the smallest value of the Akaike Information Criterion (AIC), which measures the relative quality of statistical models. There are a number of limitations when using Stepwise regression which include: 1) the final model is not guaranteed to be optimal in any specified sense. 2) The stepwise procedure produces a single final model, although there are often several equally good models. 3) it does not consider a researcher’s knowledge of the predictors. 4) Although the order in which the variables are removed or added can provide valuable information, it’s important not to over interpret the order. 5) one should not conclude that all the important variables for predicting y have been identified or that all unimportant variables have been eliminated.
+
+
+K-fold
 ## Additional Analyses
 
 ## Software

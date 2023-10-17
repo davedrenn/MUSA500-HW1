@@ -4,9 +4,11 @@ output: html_document
 date: "2023-10-19"
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
+```
 
+```{r import_libraries}
 library(here)
 library(tidyverse)
 library(kableExtra)
@@ -14,7 +16,7 @@ library(sf)
 library(gridExtra)
 library(MASS)
 library(DAAG)
-library(corrr)      # another way to plot correlation plot
+library(corrr)
 
 options(scipen = 999)
 ```
@@ -22,6 +24,7 @@ options(scipen = 999)
 # Introduction
 
 # Methods
+
 ## Data Cleaning
 
 The data set used in our analysis contains information from the 2000 US Census for Philadelphia, with neighborhood characteristic variables included for 1,720 block groups. Our analysis incorporates the following variables:
@@ -126,7 +129,7 @@ This report used the open source software R to conduct statistical analyses.
 
 ## Exploratory Results
 
-```{r data}
+```{r data, echo=FALSE}
 
 data <- read.csv("Data/RegressionData.csv")
 
@@ -137,7 +140,7 @@ data <- read.csv("Data/RegressionData.csv")
 This table below shows the mean and standard deviation for our independent variable (Median house value) and our four dependent variables. 
 The average median home value for census block groups in Philadelphia is 66,287.73 USD, and the standard deviation is 60,006 USD. The large standard deviation indicates a large amount of variability in average home sale prices across the different census block groups in Philadelphia. 
 
-```{r table}
+```{r table, echo=FALSE}
 
 summary_stats_mean <- data %>%
   summarise(HEDVAL = mean(MEDHVAL),
@@ -172,6 +175,7 @@ variables_with_zero_values <- names(zero_columns[zero_columns])
 cat("Columns with 0 values:", paste(variables_with_zero_values, collapse = ", "))
 
 ```
+
 ### Histograms
 
 ```{r log_trans, echo=FALSE}
@@ -186,7 +190,7 @@ data$LNPCTSINGLES <- log(1 + data$PCTSINGLES)
 
 The two histograms below show the distribution of our dependent variable, median home values of owner occupied housing units by census tract before and after applying a logarithmic transformation. The histogram without the logarithmic transformation peaks around 75,000 USD and is right skewed - it does not have a normal distribution. After applying a logarithmic transformation, the mean home value has a near normal distribution with a peak around 11. Our analysis will use the log-transformation of Median Household income as the independent variable because it is best practice to use a variable with a normal distribution when conducting a linear regression analysis.
 
-```{r hist_MEDHVAL}
+```{r hist_MEDHVAL, echo=FALSE}
 par(mfrow=c(1,2))
 hist(data$MEDHVAL,breaks=100)
 hist(data$LNMEDHVAL,breaks=100)
@@ -198,11 +202,12 @@ These histograms show the distribution of the percent of the population with a b
 After applying a log transformation, the 143 census blocks which had a value of 0% continue to have a value of 0. The distribution with the log transformation applied is not normal and has a zero infrared distribution. Because both the variable with and without the log transformation applied are both not normal we will use the variable without the log transformation (PCTBACHMORE) for the regression.
 
 
-```{r hist_PCTBACHMOR}
+```{r hist_PCTBACHMOR, echo=FALSE}
 par(mfrow=c(1,2))
 hist(data$PCTBACHMOR,breaks=100)
 hist(data$LNPCTBACHMOR,breaks=100)
 ```
+
 #### Population Below the Poverty Line
 
 The histograms below show the distribution of the population living below the poverty line in each census block with and without the log transformation applied. The histogram without the log transformation, is again right skewed and peaks around 100 households. There is a very long tail to the right, and multiple outliers are present. Notably, the maximum value is 1,267 households below the poverty line in one census tract - which is more than 6 times larger than the mean value. 
@@ -210,34 +215,36 @@ The histograms below show the distribution of the population living below the po
 After applying a log transformation, the variable displays a distribution which is closer to a normal distribution. There is a clear peak around 5.5, but the data is slightly skewed to the left and is zero inflated, but is closer to a normal distribution than the non log transformed variable. Because the log transformed variable is closer to a normal distribution we use the log transformation of the Population Below the Poverty Line (LNBELPOV100) in our regression.
 
 
-```{r hist_NBELPOV100}
+```{r hist_NBELPOV100, echo=FALSE}
 par(mfrow=c(1,2))
 hist(data$NBELPOV100,breaks=100)
 hist(data$LNBELPOV100,breaks=100)
 ```
+
 #### Percent of Households units which are vacant
 
 The histograms below show the distribution for the percent of housing units in a census tract which are vacant with and without the log transformation. The histogram without the log transformation is right skewed and has a long tail, with multiple outliers present. Additionally, there are 163 census block groups where 0% of the housing units are vacant.
 
 After applying the log transformation, the 163 census block groups which have a value of 0% still have a value of 0, the presence of the large number of census block groups with a value of zero prevents the distribution from being considered normal and results in a zero-inflated distribution. Because neither distribution is normal we use the variable without the log transformation in our regression analysis (PCTVACANT).
 
-```{r hist_PCTVACANT}
+```{r hist_PCTVACANT, echo=FALSE}
 par(mfrow=c(1,2))
 hist(data$PCTVACANT,breaks=100)
 hist(data$LNPCTVACANT,breaks=100)
 ```
+
 #### Percent of housing units that are detached single family houses 
 
 The histograms below show the distribution for the percent of housing units that are detached single family homes by census block group with and without the log transformation. The histogram without the log transformation is very right skewed, and the vast majority of census block groups (i.e: 1,548) have a percentage less than 20%, and there are 306 block groups where the percentage value is 0. There are 172 census block groups which have percentages above 20% including three homes with values of 100%. The extreme outliers are likely are a result of the inclusion of sub-urban census block groups in Northeast and Northwest where most homes are detached single family homes. 
 
 After applying the log transformation the 306 block groups where the percentage was 0, continue to have a percentage value of 0 resulting in a zero inflated distribution. Because both the log transformed and non-log transformed variable do not have a normal distribution we use the non-log transformed variable in our regression analysis.
 
-
-```{r hist_PCTSINGLES}
+```{r hist_PCTSINGLES,echo=FALSE}
 par(mfrow=c(1,2))
 hist(data$PCTSINGLES,breaks=100)
 hist(data$LNPCTSINGLES,breaks=100)
 ```
+
 ### Maps
 
 This section includes coloropleth maps of our dependent and four independent variables.
@@ -246,7 +253,7 @@ This section includes coloropleth maps of our dependent and four independent var
 
 This map shows our dependent variable, which is the median house value of owner occupied units by census tract with a log transformation. We observe that the census tracts with the highest median home values are primarily clustered in center city and northwest Philadelphia. The census tracts with the lowest median home values are located North of center city and in areas of West Philadelphia located west of University City. 
 
-```{r LNMEDHVAL map}
+```{r LNMEDHVAL_map,echo=FALSE}
 
 # Change design
 map <- st_read("Data/RegressionData.shp")
@@ -276,7 +283,7 @@ Conversely, the PCTSINGLES variable does not appear to be correlated with our de
 The PCTBACHMOR and PCTVACANT appear to have a strong negative correlation, as areas with a high PCTVACANT rate also have a low PCTBACHMOR rate. Conversely, areas with a high PCTBACHMOR rate have a low PCTVACANT rate. This negative correlation indicates that there may be multicollinearity between these two variables. We will check the strength of this correlation using Pearsons’s correlation to determine if this multicollinearity could be an issue in our regression.
 
 
-```{r variables maps, fig.width = 12}
+```{r variables maps, fig.width = 12, echo=FALSE}
 # Change designs
 pctvacant_map <- ggplot() +
   geom_sf(data = map, aes(fill = PCTVACANT), color = NA) +
@@ -341,8 +348,8 @@ Despite the correlations, we can conclude that there is not severe multicollinea
 
 The Pearson correlation value for the relationship between PCTBACHMOR and PCTVACANT is -0.3 supporting our previous conclusion that there is a negative correlation between the variables. However, since the Pearson correlation is more than -0.9 we do not need to be concerned about severe multicollinearity. 
 
+```{r pearson, echo=FALSE}
 
-```{r pearson}
 predictors <- data %>% dplyr::select(PCTBACHMOR, PCTVACANT, PCTSINGLES, LNBELPOV100)
 
 predictors %>% 
@@ -351,7 +358,7 @@ predictors %>%
   geom_text(aes(label = round(r,digits=2)),size = 8)
 ```
 
-# Regression Analysis
+## Regression Analysis
 
 When we review our regression analysis we start by examining the f-ratio. The f-ratio is 840.9, and the p-value associated with the f-ratio is less than 0.0001. Thus, we can reject the null hypothesis that all β coefficients are zero. 
 
@@ -363,7 +370,7 @@ For the population below the poverty line both our independent variable and our 
 
 The R-squared value is 0.6623, indicating that 66.23% of the variance in our dependent variable is explained by our four independent variables. 33.77% of the variance is not explained by our four independent variables. Our adjusted R-squared value is 0.6615, indicating that 66.15% of the variance in our dependent variable is explained by our four independent variables after adjusting the r-squared to account for the model including more than one independent variable. 
 
-```{r regression}
+```{r regression, echo=FALSE}
 ## Regression Results
 
 fit <-lm(LNMEDHVAL ~  PCTVACANT + PCTSINGLES + PCTBACHMOR + LNBELPOV100, data=data)
@@ -373,8 +380,7 @@ summary(fit)
 
 The table below shows an analysis of the variance table for our linear regression model. The Sum of Square Errors (SSE) for our model is 230.44. The Regression Sum of Squares (SSR) is equal to 451.745, and the Total Sum of Squares (SST) is equal to 672.185. We can calculate the $R^2$ for our model by dividing the SSR by the SST, i.e: 451.745 / 682.089 which equals 0.6623.
 
-
-``` {r anova}
+``` {r anova, echo=FALSE}
 anova(fit)
 ```
 
@@ -391,7 +397,7 @@ In cases where this assumption is not met, log transformations are often used. B
 
 The following scatter plots show the relationship between the dependent variable, LNMEDHVAL, and each the predictor variables LNNBELPOV100, PCTBACHMOR, PCTVACANT, and PCTSINGLES. There does not appear to be a linear relationship between LNMEDHVAL and the predictor variables, even with log transformations used. The variables all appear heavily skewed - the relationship between LNNBELPOV and LNBELPOV100 appears to be  negatively skewed, and the individual relationship between the other three predictors and LNMEDHVAL appears to be heavily positively skewed.
  
-```{r scatter}
+```{r scatter, echo=FALSE}
 par(mfrow=c(2,2))
 plot(data$LNBELPOV100, data$LNMEDHVAL)
 plot(data$PCTBACHMOR,data$LNMEDHVAL)
@@ -399,7 +405,7 @@ plot(data$PCTVACANT, data$LNMEDHVAL)
 plot(data$PCTSINGLES, data$LNMEDHVAL)
 ```
 
-###Histogram of the standardized residuals
+### Histogram of the standardized residuals
 
 <!-- This first para may be unnecessary -->
 Another assumption when running linear regression is that regression residuals are distributed normally. However, this assumption of normality is not considered critical in a regression, especially for data sets with a large number of observations. 
@@ -408,7 +414,7 @@ In order to compare residuals for different observations, we standardize the res
 
 The following histogram of standardized residuals shows that residuals appear normally distributed.
 
-```{r resid plot}
+```{r resid plot, echo=FALSE}
 
 #predicted values, residuals and standardized residuals
 
@@ -423,8 +429,7 @@ hist(data$stdres, breaks=100)
 
 ```
 
-
-###Scatter Plot - Standardized Residual by Predicted Value
+### Scatter Plot - Standardized Residual by Predicted Value
 
 <!-- This first para may be unnecessary -->
 
@@ -436,17 +441,19 @@ Outliers also appear to be present based on our scatter plot - there are several
 
 The standardized residuals also appear to be heavily clustered around between the predicted values of about 10.5 to 11.5.
 
-```{r plot_stand_resid}
+```{r plot_stand_resid, echo=FALSE}
 
 plot(data$predvals, data$stdres, xlab = "Predicted Values ", ylab = "Standardized Residuals ", main = "Predicted Values vs. Standardized Residuals ")
 
 ```
-###Spatial Autocorrelation of Variables
+
+### Spatial Autocorrelation of Variables
 
 Based on the maps of the dependent variable LNMEDHVAL and the predictor variables, we can estimate whether observations of each variable appear to show spatial autocorrelation - defined as observing the degree to which similar values cluster near each other. Our variables may appear to spatial autocorrelation  
 
-###Choropleth map of the standardized regression residuals
-```{r resid map}
+### Choropleth map of the standardized regression residuals
+
+```{r resid map, echo=FALSE}
 
 map2 <- cbind(map, data %>% dplyr::select(stdres))
 
@@ -466,11 +473,10 @@ ggplot()+
 
 ## Additional Models
 
-###Stepwise Regression
+### Stepwise Regression
 
 
-
-```{r plot_stepwise}
+```{r plot_stepwise, echo=FALSE}
 
 step <- stepAIC(fit, direction="both")
 # display results
@@ -478,9 +484,9 @@ step$anova
 
 ```
 
-###Cross-Validation
+### Cross-Validation
 
-```{r cross-validation, message=FALSE, cache=FALSE,  echo=TRUE, results='hide', fig.show='hide'}
+```{r cross-validation, message=FALSE, cache=FALSE,  echo=FALSE, results='hide', fig.show='hide'}
 
 fit1 <- lm(LNMEDHVAL ~ PCTVACANT + PCTSINGLES + PCTBACHMOR + LNBELPOV100, data=data)
 cv1 <- CVlm(data=data, fit1, m=5)

@@ -29,7 +29,6 @@ library(corrr)
 library(tinytex)
 library(extrafont)
 
-windowsFonts(A = windowsFont("Times New Roman"))
 
 
 options(scipen = 999)
@@ -247,8 +246,8 @@ Our analysis will use the natural log transformation of median home sales value 
 
 ```{r hist_MEDHVAL}
 par(mfrow=c(1,2))
-hist(data$MEDHVAL,breaks=100, family = 'A')
-hist(data$LNMEDHVAL,breaks=100, family = 'A')
+hist(data$MEDHVAL,breaks=100)
+hist(data$LNMEDHVAL,breaks=100)
 ```
 
 #### Percent of Population with a Bachelor Degree:
@@ -262,8 +261,8 @@ After applying a natural log transformation, the 143 census blocks which had a v
 ```{r hist_PCTBACHMOR, echo=FALSE}
 
 par(mfrow=c(1,2))
-hist(data$PCTBACHMOR,breaks=100, family = "A")
-hist(data$LNPCTBACHMOR,breaks=100, family = "A")
+hist(data$PCTBACHMOR,breaks=100)
+hist(data$LNPCTBACHMOR,breaks=100)
 ```
 
 
@@ -276,8 +275,8 @@ After applying a natural log transformation, the variable displays a distributio
 ```{r hist_NBELPOV100, echo=FALSE}
 
 par(mfrow=c(1,2))
-hist(data$NBELPOV100,breaks=100, family = "A")
-hist(data$LNBELPOV100,breaks=100, family = "A")
+hist(data$NBELPOV100,breaks=100)
+hist(data$LNBELPOV100,breaks=100)
 ```
 
 
@@ -291,8 +290,8 @@ After applying the natural log transformation, the 163 census block groups which
 ```{r hist_PCTVACANT, echo=FALSE}
 
 par(mfrow=c(1,2))
-hist(data$PCTVACANT,breaks=100, family = "A")
-hist(data$LNPCTVACANT,breaks=100, family = "A")
+hist(data$PCTVACANT,breaks=100)
+hist(data$LNPCTVACANT,breaks=100)
 ```
 
 
@@ -305,8 +304,8 @@ After applying the log transformation the 306 block groups where the percentage 
 ```{r hist_PCTSINGLES,echo=FALSE}
 
 par(mfrow=c(1,2))
-hist(data$PCTSINGLES,breaks=100, family = "A")
-hist(data$LNPCTSINGLES,breaks=100, family = "A")
+hist(data$PCTSINGLES,breaks=100)
+hist(data$LNPCTSINGLES,breaks=100)
 ```
 
 ### Maps
@@ -555,6 +554,8 @@ ggplot()+
 
 ### Stepwise Regression
 
+Inputting the variables of our model into a stepwise regression test results in a final model that retains all four of the original predictor variables. Therefore, all four predictors had sufficiently low p-values and removing predictors did not lower the value of the AIC.
+
 ```{r plot_stepwise, echo=FALSE}
 
 
@@ -565,6 +566,8 @@ step$anova
 ```
 
 ### Cross-Validation
+
+The following table provides the results of k-fold cross validation, when the number of folds (k) is set to 5. The root mean square error of the original model is represented by rmse1, which we compare to a second regression model’s root mean square error, rmse2. This second model only includes the percent of vacancy and median household income as predictors for median home value. Given that rmse1 is lower than rmse2, our original model is considered more generalizable when using different folds of the data and is thus a better fit for the model.
 
 ```{r cross-validation, message=FALSE, cache=FALSE,  echo=FALSE, results='hide', fig.show='hide'}
 

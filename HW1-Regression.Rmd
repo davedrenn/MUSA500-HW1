@@ -252,32 +252,6 @@ summary(fit)
 anova(fit)
 ```
 
-```{r plot_stepwise}
-
-step <- stepAIC(fit, direction="both")
-# display results
-step$anova
-
-```
-
-```{r cross-validation, message=FALSE, cache=FALSE,  echo=TRUE, results='hide', fig.show='hide'}
-
-fit1 <- lm(LNMEDHVAL ~ PCTVACANT + PCTSINGLES + PCTBACHMOR + LNBELPOV100, data=data)
-cv1 <- CVlm(data=data, fit1, m=5)
-
-mse1 <- attr(cv1, "ms")
-rmse1 <- sqrt(mse1)						  #Obtaining RMSE for model 1
-rmse1
-
-fit2 <- lm(LNMEDHVAL ~ PCTVACANT + MEDHHINC, data=data)
-cv2 <- CVlm(data=data, fit2, m=5)
-
-mse2 <- attr(cv2, "ms")
-rmse2 <- sqrt(mse2)						  #Obtaining RMSE for model 2
-rmse2
-
-```
-
 ## Regression Assumptions Checks
 
 In this section, we will discuss testing model assumptions. We have already examined the variable distributions in a prior section. 
@@ -361,6 +335,44 @@ ggplot()+
     axis.ticks = element_blank(),
     axis.text = element_blank()
     )
+
+```
+
+## Additional Models
+
+###Stepwise Regression
+
+
+
+```{r plot_stepwise}
+
+step <- stepAIC(fit, direction="both")
+# display results
+step$anova
+
+```
+
+###Cross-Validation
+
+```{r cross-validation, message=FALSE, cache=FALSE,  echo=TRUE, results='hide', fig.show='hide'}
+
+fit1 <- lm(LNMEDHVAL ~ PCTVACANT + PCTSINGLES + PCTBACHMOR + LNBELPOV100, data=data)
+cv1 <- CVlm(data=data, fit1, m=5)
+
+mse1 <- attr(cv1, "ms")
+rmse1 <- sqrt(mse1)						  #Obtaining RMSE for model 1
+rmse1
+
+fit2 <- lm(LNMEDHVAL ~ PCTVACANT + MEDHHINC, data=data)
+cv2 <- CVlm(data=data, fit2, m=5)
+
+mse2 <- attr(cv2, "ms")
+rmse2 <- sqrt(mse2)						  #Obtaining RMSE for model 2
+rmse2
+
+rmse_both <- cbind(rmse1, rmse2)
+
+rmse_both %>% kbl() %>% kable_minimal(full_width = FALSE)
 
 ```
 

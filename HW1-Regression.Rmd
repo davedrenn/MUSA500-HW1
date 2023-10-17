@@ -144,10 +144,7 @@ Stepwise regression is a data mining method which selects predictors based on th
 
 ### K-Fold Cross-Validation
 
-The k-Fold Cross-Validation approach involves randomly dividing the set of observations into $k$ groups (or folds), of approximately equal size . In practice it is typical to use $k=5$ or $k=10$. The first fold is treated as a validation set and the model is fitted on the remaining $k-1$ folds (training data set). The mean squared error (MSE) is then computed on the observations in the held-out fold. The procedure is repeated $k$ times, each time, a different fold is treated as the validation set. This process results in $k$ estimates of MSE, The k-fold MSE estimate is computed by averaging the MSEs across the k folds.  The k-fold Root Mean Squared Error (RMSE) is computed as the square root of the MSE $RMSE = \sqrt{\frac{\sum_{i=1}^n \epsilon_i^2}{n}}$. RMSE values can be compared across different models, the model with the smallest RMSE will be the best model. with the following equation:
-
-
-RMSE values can be compared across different models, the model with the smallest RMSE will be the best model. 
+The k-Fold Cross-Validation approach involves randomly dividing the set of observations into $k$ groups (or folds), of approximately equal size . In practice it is typical to use $k=5$ or $k=10$. The first fold is treated as a validation set and the model is fitted on the remaining $k-1$ folds (training data set). The mean squared error (MSE) is then computed on the observations in the held-out fold. The procedure is repeated $k$ times, each time, a different fold is treated as the validation set. This process results in $k$ estimates of MSE, The k-fold MSE estimate is computed by averaging the MSEs across the k folds.  The k-fold Root Mean Squared Error (RMSE) is computed as the square root of the MSE $RMSE = \sqrt{\frac{\sum_{i=1}^n \epsilon_i^2}{n}}$. RMSE values can be compared across different models, the model with the smallest RMSE will be the best model.
 ## Additional Analyses
 
 ## Software

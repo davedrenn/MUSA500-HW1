@@ -1,14 +1,19 @@
 ---
 title: "HW1-OLS_Regression"
-output: html_document
+output:
+  pdf_document:
+    latex_engine: xelatex
 date: "2023-10-19"
+mainfont: "Times New Roman"
 ---
 
 ```{r setup, echo=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
 ```
 
-```{r import_libraries}
+```{r packages}
+#tinytex::install_tinytex()
+
 library(here)
 library(tidyverse)
 library(kableExtra)
@@ -16,10 +21,16 @@ library(sf)
 library(gridExtra)
 library(MASS)
 library(DAAG)
-library(corrr)
+library(corrr)      # another way to plot correlation plot
+library(extrafont)
+
+windowsFonts(A = windowsFont("Times New Roman"))
 
 options(scipen = 999)
 ```
+
+$$SSE = \sum(y_i - \hat{y_i})^2 = \sum[y_i - (\hat\beta_0 + \hat\beta_1x_{1i} + \hat\beta_2x_{2i} + ... + \hat\beta_kx_{ki})]^2 $$
+
 
 # Introduction
 
@@ -56,9 +67,9 @@ In this analysis, we will examine the relationships between our dependent variab
 
 We will examine the summary statistics and distributions of the data set’s variables, including the mean and standard deviation of our dependent variable and predictor variables.
 
-As part of our exploratory data analysis, we will examine the Pearson correlations between the predictors. A Pearson correlation is a standardized measurement of the strength and direction of the linear relationship between two variables. The correlation between two variables is calculated using the following equation:
+As part of our exploratory data analysis, we will examine the Pearson correlations between the predictors. A Pearson correlation, denoted by "r", is a standardized measurement of the strength and direction of the linear relationship between two variables. The correlation between two variables is calculated using the following equation:
 
-equation
+$$r=\frac{1}{n-1}\sum_{i=1}^{n}\left(\frac{x_i-x ̅}{s_x}\right)\left(\frac{y_i-y ̅}{s_x}\right)$$
 
 The Pearson correlation value ranges between -1 to 1, with no units of measurement attached, and the observed variables are interchangeable between the x axis and y axis. A value of -1 represents a perfect negative linear relationship and a value of 1 represents a perfect positive linear relationship - in either case, points on a graph would appear in a straight line with either a negative or positive slope, respectively. 
 
@@ -72,7 +83,7 @@ When we are dealing with more than one predictor, we run a multiple regression. 
 
 To examine the relationship between median house values and several neighborhood characteristics we will need to run a multiple regression. Using Philadelphia data at the Census block group level we regressed Natural Log of Median value of all owner occupied housing units (LNMEDHVAL) on the proportion of housing units that are vacant (PCTVACANT), the percent of housing units that are detached single family houses (PCTSINGLES), proportion of residents in Block Group with at least a bachelor’s degree (PCTBACHMOR), and the Natural Log of Number of households with incomes below 100% poverty level (LNNBELPOV100). The equation is stated as:
 
-LNMEDHHINC=β_0+β_1 PCTVACANT+β_2 PCTSINGLES+β_3 PCTBACHMOR+β_4 LNNBELPOV100+ ε
+$$LNMEDHHINC=β_0+β_1 PCTVACANT+β_2 PCTSINGLES+β_3 PCTBACHMOR+β_4 LNNBELPOV100+ ε$$
 
 The Beta coefficient β_i of each predictor may be interpreted as the amount by which the dependent variable changes as the independent variable increases by one unit (holding all other variables constant). The sign indicates whether the relationship between the dependent variable and the independent variables is positive (direct) or negative (inverse). It is important to look at the sign and value of β_i when the coefficient is statistically significant (significantly different from zero). The variable ε commonly referred to as the residual term or random error term in the model. The residual term ε allows the regression line to fall above (ε > 0) or below (ε < 0). The actual data points. ε is the difference between observed values of y and the values of y predicted by the regression model (denoted by y ̂).
 
@@ -169,7 +180,6 @@ left_join(summary_stats_mean, summary_stats_sd, by='variable') %>%
   dplyr::select('row_names','mean','sd') %>%
   kbl(col.names = c('Variable','Mean','Standard Deviation')) %>%
   kable_classic()
-  
 ```
 
 
@@ -196,10 +206,10 @@ data$LNPCTSINGLES <- log(1 + data$PCTSINGLES)
 
 The two histograms below show the distribution of our dependent variable, median home values of owner occupied housing units by census tract before and after applying a logarithmic transformation. The histogram without the logarithmic transformation peaks around 75,000 USD and is right skewed - it does not have a normal distribution. After applying a logarithmic transformation, the mean home value has a near normal distribution with a peak around 11. Our analysis will use the log-transformation of median home sales value as the independent variable because it is best practice to use a variable with a normal distribution when conducting a linear regression analysis.
 
-```{r hist_MEDHVAL, echo=FALSE}
+```{r hist_MEDHVAL}
 par(mfrow=c(1,2))
-hist(data$MEDHVAL,breaks=100)
-hist(data$LNMEDHVAL,breaks=100)
+hist(data$MEDHVAL,breaks=100, family = "A")
+hist(data$LNMEDHVAL,breaks=100, family = "A")
 ```
 #### Percent of Population with a Bachelor Degree:
 
@@ -210,8 +220,8 @@ After applying a log transformation, the 143 census blocks which had a value of 
 
 ```{r hist_PCTBACHMOR, echo=FALSE}
 par(mfrow=c(1,2))
-hist(data$PCTBACHMOR,breaks=100)
-hist(data$LNPCTBACHMOR,breaks=100)
+hist(data$PCTBACHMOR,breaks=100, family = "A")
+hist(data$LNPCTBACHMOR,breaks=100, family = "A")
 ```
 
 #### Population Below the Poverty Line
@@ -223,8 +233,8 @@ After applying a log transformation, the variable displays a distribution which 
 
 ```{r hist_NBELPOV100, echo=FALSE}
 par(mfrow=c(1,2))
-hist(data$NBELPOV100,breaks=100)
-hist(data$LNBELPOV100,breaks=100)
+hist(data$NBELPOV100,breaks=100, family = "A")
+hist(data$LNBELPOV100,breaks=100, family = "A")
 ```
 
 #### Percent of Households units which are vacant
@@ -235,8 +245,8 @@ After applying the log transformation, the 163 census block groups which have a 
 
 ```{r hist_PCTVACANT, echo=FALSE}
 par(mfrow=c(1,2))
-hist(data$PCTVACANT,breaks=100)
-hist(data$LNPCTVACANT,breaks=100)
+hist(data$PCTVACANT,breaks=100, family = "A")
+hist(data$LNPCTVACANT,breaks=100, family = "A")
 ```
 
 #### Percent of housing units that are detached single family houses 
@@ -247,8 +257,8 @@ After applying the log transformation the 306 block groups where the percentage 
 
 ```{r hist_PCTSINGLES,echo=FALSE}
 par(mfrow=c(1,2))
-hist(data$PCTSINGLES,breaks=100)
-hist(data$LNPCTSINGLES,breaks=100)
+hist(data$PCTSINGLES,breaks=100, family = "A")
+hist(data$LNPCTSINGLES,breaks=100, family = "A")
 ```
 
 ### Maps
@@ -270,10 +280,11 @@ A <- ggplot() +
   labs(title = "Log Median Home Value") +
   theme_dark() +
   theme( 
+    plot.title = element_text(family = A),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.ticks = element_blank(),
-    axis.text = element_blank()
+    axis.text = element_blank(),
     )
 
 A

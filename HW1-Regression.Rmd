@@ -7,8 +7,9 @@ date: "2023-10-19"
 mainfont: "Times New Roman"
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
+```
 
 #tinytex::install_tinytex()
 
@@ -33,6 +34,7 @@ $$SSE = \sum(y_i - \hat{y_i})^2 = \sum[y_i - (\hat\beta_0 + \hat\beta_1x_{1i} + 
 # Introduction
 
 # Methods
+
 ## Data Cleaning
 
 The data set used in our analysis contains information from the 2000 US Census for Philadelphia, with neighborhood characteristic variables included for 1,720 block groups. Our analysis incorporates the following variables:
@@ -68,6 +70,65 @@ A Pearson correlation value of 0 indicates that there is no linear relationship 
 
 ## Multiple Regression Analysis
 
+Regression or Ordinary Least Square (OLS) regression is a statistical method used to examine the relationship between a variable of interest (dependent variable) and one or more explanatory variable (predictors). Regression tests the strength of the relationship, the direction of the relationship (positive. Negative, or 0) and goodness of model fit (how well a model will predict a future set of observations). Regression also allows the ability to calculate the amount by which your dependent variable changes when a predictor variable changes by one unit (holding all other predictors constant). Although, if an explanatory variable is a significant predictor of the dependent variable, it does not imply causation. 
+
+When we are dealing with more than one predictor, we run a multiple regression. In Multiple Regression Analysis we have K>1 predictors (independent variable), so rather than getting a line in 2 dimensions from a linear regression, we get a surface in K+1 dimensions (“+1” accounts for the dependent variable).  Here, each independent variable will have its own slope coefficient which indicates the relationship of that particular predictor with the dependent variable, controlling for all other independent variables in the regression.
+
+To examine the relationship between median house values and several neighborhood characteristics we will need to run a multiple regression. Using Philadelphia data at the Census block group level we regressed Natural Log of Median value of all owner occupied housing units (LNMEDHVAL) on the proportion of housing units that are vacant (PCTVACANT), the percent of housing units that are detached single family houses (PCTSINGLES), proportion of residents in Block Group with at least a bachelor’s degree (PCTBACHMOR), and the Natural Log of Number of households with incomes below 100% poverty level (LNNBELPOV100). The equation is stated as:
+
+LNMEDHHINC=β_0+β_1 PCTVACANT+β_2 PCTSINGLES+β_3 PCTBACHMOR+β_4 LNNBELPOV100+ ε
+
+The Beta coefficient β_i of each predictor may be interpreted as the amount by which the dependent variable changes as the independent variable increases by one unit (holding all other variables constant). The sign indicates whether the relationship between the dependent variable and the independent variables is positive (direct) or negative (inverse). It is important to look at the sign and value of β_i when the coefficient is statistically significant (significantly different from zero). The variable ε commonly referred to as the residual term or random error term in the model. The residual term ε allows the regression line to fall above (ε > 0) or below (ε < 0). The actual data points. ε is the difference between observed values of y and the values of y predicted by the regression model (denoted by y ̂).
+
+When using regression to model the relationships between a dependent variable and predictors certain conditions must be met, these conditions are referred to as assumptions. Prior to making conclusions about the model estimates or using the model for predictions, certain assumptions must be met.  These assumptions include Linearity, Independence of Observations, Normality of Residuals, Homoscedasticity, and No Multicollinearity. 
+
+Linearity assumes that there is a linear relationship between the dependent variable Y and each of the predictors X. Linearity can be checked by creating scatterplots between y and each of the predictor x. Possible fixes if the Linearity assumption is not met are to transform variables (e.g., log) or run a non-linear (e.g., polynomial) model. 
+
+Independence of Observations assumes that there should be no spatial, temporal, or other forms of dependence in the data. This means that each observation from the data must be independent of the others. In order to test for Independence of Observations one can look at the Moran’s I of the residual, or the values of y to examine whether regression residuals, or the dependent variable itself, are spatially autocorrelated. If this assumption is not met one must run a spatial regression e.g., spatial lag, spatial error, geographically weighted regression) instead of OLS regression. 
+
+Normality of Residuals is violated because either the dependent variable and/or independent variables are themselves non-normal, and/or the linearity assumption is violated. This assumption is not ass important as the 3 previously stated assumptions, especially when dealing with a large sample size. In this context, a large sample size is generally defined as having 30+ observations with 10 additional observations for every additional predictor after the first one. One can test for this assumption by looking at the histogram of residuals to see if they are normal. If this assumption is violated possible fixes include removing outliers and transforming variables (e.g., log).
+
+Homoscedasticity refers to the variance of the residuals ε being constant regardless of the values of each x (or the values of y ̂, i.e., values of y predicted by the model). When this assumption is violated, Heteroscedasticity is present meaning that the residuals ε differs across all values of the independent variable. This assumption can be checked by looking at scatterplots of standardized residuals against each predictor to see if variance of residuals remains the same for different values of each predictor. Violation of this assumption implies Heteroscedasticity which often means that that there is systematic under-or over-prediction happening in the model. Including additional predictors, running a spatial regression, transforming variables, and removing outliers may help reduce Heteroscedasticity.
+
+No Multicollinearity which only applies to multiple regression, occurs when predictor variables are not strongly correlated with each other. Multicollinearity is when two or more predictors are very strongly correlated with each other: r > 0.9 or r < -0.9. If Multicollinearity is present in a model, it will become difficult for the model to estimate the relationship between each independent variable and the dependent variable independently making it difficult to identify significant predictors.
+One can check for this assumption by reviewing a correlation matrix of the predictors and check if r > 0.8 or r < -0.8. If two or more predictors are strongly correlated, include only one of them in the regression.
+
+Performing multiple regression requires one to estimate the values for a critical set of parameters. These parameters include σ2 which determines the amount of variability inherent in a regression model, a regression constant β_0  and one regression coefficient β_i for each independent variable in the model. The regression constant or the Intercept β_0 represents the mean value of the dependent variable when all the independent variables are equal to 0. The regression coefficient, as stated above, is interpreted as the amount by which the dependent variable changes as the independent variable increases by one unit (holding all other variables constant).
+
+SSE=∑▒(y_i-y ̂_i )^2 =∑▒[y_i-(β ̂_0+β ̂_1 x_1i+β ̂_2 x_2i+⋯+β ̂_k x_ki )]^2 
+
+In Multiple regression σ^2 is found with the following equation 
+σ^2=SSE/(n-(k+1))=MSE, where k = # predictors and n = # observations. Here, MSE stands for mean squared error.
+
+
+R2, often referred to as the Coefficient of Multiple Determination, is the proportion of observed variance in the dependent variable y that is explained by the model by all k predictors. Higher values of R2 are indicative of a better model. R2 is calculated as  R^2=1-SSE/SST  Where SSE is the sum of squared residuals and SST is the total variability in the dependent variable. Adjusted R2 is the R2 adjusted for the number of predictors in the model. Larger values for Adjusted R2, like R2, are also indicative of a better model. The equation for Adjusted R2,
+
+R_adj^2=((n-1) R^2-k)/(n-(k+1))
+
+When stating the hypothesis we first look at F-Ratio which tests the overall significance of the model by testing the Null Hypothesis  〖H_0: β〗_i=0  that none of the independent variables in the model is a significant predictor of the dependent variable (LNMEDHVAL) against the Alternative Hypothesis 〖H_a: β〗_i≠0 that at least one of the independent variables is a significant predictor of the dependent variable (LNMEDHVAL). We will look at the F-ratio for the chosen predictors 〖 β〗_1PCTVACANT, 〖 β〗_2PCTSINGLES, 〖 β〗_3PCTBACHMOR, 〖 β〗_4LNNBELPOV100.  
+
+.
+PCTVACANT:
+〖H_0: β〗_1=0: Implies that the variable PCTVACANT is not a significant predictor of the dependent variable (LNMEDHVAL).
+〖H_a: β〗_i≠0: Implies that the variable PCTVACANT is a significant predictor of the dependent variable (LNMEDHVAL).
+
+PCTSINGLES:
+〖H_0: β〗_2=0: Implies that the variable PCTSINGLES is not a significant predictor of the dependent variable (LNMEDHVAL).
+〖H_a: β〗_2≠0: Implies that the variable PCTSINGLES is a significant predictor of the dependent variable (LNMEDHVAL).
+
+PCTBACHMOR:
+〖H_0: β〗_3=0: Implies that the variable PCTBACHMOR is not a significant predictor of the dependent variable (LNMEDHVAL).
+〖H_a: β〗_3≠0: Implies that the variable PCTBACHMOR is a significant predictor of the dependent variable (LNMEDHVAL).
+
+LNNBELPOV100:
+〖H_0: β〗_4=0: Implies that the variable LNNBELPOV100 is not a significant predictor of the dependent variable (LNMEDHVAL).
+〖H_a: β〗_4≠0: Implies that the variable LNNBELPOV100 is a significant predictor of the dependent variable (LNMEDHVAL).
+
+
+Stepwise regression is a data mining method which selects predictors based on the following criteria.  1) P-values are below a certain threshold (variables where the P-value < 0.1) and 2) the smallest value of the Akaike Information Criterion (AIC), which measures the relative quality of statistical models. There are a number of limitations when using Stepwise regression which include: 1) the final model is not guaranteed to be optimal in any specified sense. 2) The stepwise procedure produces a single final model, although there are often several equally good models. 3) it does not consider a researcher’s knowledge of the predictors. 4) Although the order in which the variables are removed or added can provide valuable information, it’s important not to over interpret the order. 5) one should not conclude that all the important variables for predicting y have been identified or that all unimportant variables have been eliminated.
+
+
+K-fold
 ## Additional Analyses
 
 ## Software
@@ -78,13 +139,18 @@ This report used the open source software R to conduct statistical analyses.
 
 ## Exploratory Results
 
-```{r data}
+```{r data, echo=FALSE}
 
 data <- read.csv("Data/RegressionData.csv")
 
 ```
 
-```{r table}
+### Summary Statistics
+
+This table below shows the mean and standard deviation for our independent variable (Median house value) and our four dependent variables. 
+The average median home value for census block groups in Philadelphia is 66,287.73 USD, and the standard deviation is 60,006 USD. The large standard deviation indicates a large amount of variability in average home sale prices across the different census block groups in Philadelphia. 
+
+```{r table, echo=FALSE}
 
 summary_stats_mean <- data %>%
   summarise(HEDVAL = mean(MEDHVAL),
@@ -110,9 +176,8 @@ left_join(summary_stats_mean, summary_stats_sd, by='variable') %>%
   
 ```
 
-# quick code that checks which variables have 0 values for logarithmic transformation 
 
-```{r 0_value_check2}
+```{r 0_value_check2, eval=FALSE, echo=FALSE}
 zero_columns <- apply(data, 2, function(col) any(col == 0)) 
 
 variables_with_zero_values <- names(zero_columns[zero_columns])
@@ -121,7 +186,9 @@ cat("Columns with 0 values:", paste(variables_with_zero_values, collapse = ", ")
 
 ```
 
-```{r log_trans}
+### Histograms
+
+```{r log_trans, echo=FALSE}
 data$LNMEDHVAL <- log(data$MEDHVAL)
 data$LNPCTBACHMOR <- log(1 + data$PCTBACHMOR)
 data$LNBELPOV100 <- log(1 + data$NBELPOV100) #Rename and add N to match original name?
@@ -129,6 +196,7 @@ data$LNPCTVACANT <- log(1 + data$PCTVACANT)
 data$LNPCTSINGLES <- log(1 + data$PCTSINGLES)
 ```
 
+#### Median Home Value of owner occupied housing units
 
 ```{r hist_MEDHVAL}
 
@@ -136,41 +204,70 @@ par(mfrow=c(1,2))
 hist(data$MEDHVAL,breaks=100)
 hist(data$LNMEDHVAL,breaks=100, family = "A")
 ```
+#### Percent of Population with a Bachelor Degree:
+
+These histograms show the distribution of the percent of the population with a bachelor's degree by census tract before and after applying a logarithmic transformation. The histogram without the log transformation is right skewed, and there are 143 census blocks where 0% of the population has a bachelor degree. 
+
+After applying a log transformation, the 143 census blocks which had a value of 0% continue to have a value of 0. The distribution with the log transformation applied is not normal and has a zero infrared distribution. Because both the variable with and without the log transformation applied are both not normal we will use the variable without the log transformation (PCTBACHMORE) for the regression.
 
 
-```{r hist_PCTBACHMOR}
+```{r hist_PCTBACHMOR, echo=FALSE}
 par(mfrow=c(1,2))
 hist(data$PCTBACHMOR,breaks=100)
 hist(data$LNPCTBACHMOR,breaks=100)
 ```
 
+#### Population Below the Poverty Line
 
-```{r hist_NBELPOV100}
+The histograms below show the distribution of the population living below the poverty line in each census block with and without the log transformation applied. The histogram without the log transformation, is again right skewed and peaks around 100 households. There is a very long tail to the right, and multiple outliers are present. Notably, the maximum value is 1,267 households below the poverty line in one census tract - which is more than 6 times larger than the mean value. 
+
+After applying a log transformation, the variable displays a distribution which is closer to a normal distribution. There is a clear peak around 5.5, but the data is slightly skewed to the left and is zero inflated, but is closer to a normal distribution than the non log transformed variable. Because the log transformed variable is closer to a normal distribution we use the log transformation of the Population Below the Poverty Line (LNBELPOV100) in our regression.
+
+
+```{r hist_NBELPOV100, echo=FALSE}
 par(mfrow=c(1,2))
 hist(data$NBELPOV100,breaks=100)
 hist(data$LNBELPOV100,breaks=100)
 ```
 
+#### Percent of Households units which are vacant
 
-```{r hist_PCTVACANT}
+The histograms below show the distribution for the percent of housing units in a census tract which are vacant with and without the log transformation. The histogram without the log transformation is right skewed and has a long tail, with multiple outliers present. Additionally, there are 163 census block groups where 0% of the housing units are vacant.
+
+After applying the log transformation, the 163 census block groups which have a value of 0% still have a value of 0, the presence of the large number of census block groups with a value of zero prevents the distribution from being considered normal and results in a zero-inflated distribution. Because neither distribution is normal we use the variable without the log transformation in our regression analysis (PCTVACANT).
+
+```{r hist_PCTVACANT, echo=FALSE}
 par(mfrow=c(1,2))
 hist(data$PCTVACANT,breaks=100)
 hist(data$LNPCTVACANT,breaks=100)
 ```
 
+#### Percent of housing units that are detached single family houses 
 
-```{r hist_PCTSINGLES}
+The histograms below show the distribution for the percent of housing units that are detached single family homes by census block group with and without the log transformation. The histogram without the log transformation is very right skewed, and the vast majority of census block groups (i.e: 1,548) have a percentage less than 20%, and there are 306 block groups where the percentage value is 0. There are 172 census block groups which have percentages above 20% including three homes with values of 100%. The extreme outliers are likely are a result of the inclusion of sub-urban census block groups in Northeast and Northwest where most homes are detached single family homes. 
+
+After applying the log transformation the 306 block groups where the percentage was 0, continue to have a percentage value of 0 resulting in a zero inflated distribution. Because both the log transformed and non-log transformed variable do not have a normal distribution we use the non-log transformed variable in our regression analysis.
+
+```{r hist_PCTSINGLES,echo=FALSE}
 par(mfrow=c(1,2))
 hist(data$PCTSINGLES,breaks=100)
 hist(data$LNPCTSINGLES,breaks=100)
 ```
 
-```{r LNMEDHVAL map}
+### Maps
+
+This section includes coloropleth maps of our dependent and four independent variables.
+
+#### Map of Dependent Variable
+
+This map shows our dependent variable, which is the median house value of owner occupied units by census tract with a log transformation. We observe that the census tracts with the highest median home values are primarily clustered in center city and northwest Philadelphia. The census tracts with the lowest median home values are located North of center city and in areas of West Philadelphia located west of University City. 
+
+```{r LNMEDHVAL_map,echo=FALSE}
 
 # Change design
 map <- st_read("Data/RegressionData.shp")
 
-ggplot() +
+A <- ggplot() +
   geom_sf(data = map, aes(fill = LNMEDHVAL), color = NA) +
   scale_fill_gradient(low = "white",high = "darkseagreen4") +
   labs(title = "Log Median Home Value") +
@@ -182,9 +279,20 @@ ggplot() +
     axis.text = element_blank()
     )
 
+A
 ```
 
-```{r variables maps, fig.width = 12}
+#### Maps of Independant Variables
+
+The maps below show the spatial patterns on our four independent variables: PCTBACHMOR, PCTVACANT, PCTSINGLES, and LNBELPOV100. 
+Based on a review of the maps, the PCTBACHMOR variable appears to be the independent variable with the strongest correlation with our dependent variable. Like our dependent variable, the percent of residents living in the census tract with a bachelor degree is highest in center city and in Northwest Philadelphia. The areas with the lowest percentage of residents with a bachelor degree are located in West Philadelphia west of University City and north of Center City - these are the same areas where the log transformed median home values are lowest. 
+
+Conversely, the PCTSINGLES variable does not appear to be correlated with our dependent variable. This is because the percent of housing units that are detached single family homes tends to be low in center city, and high in Northwest Philadelphia which are both neighborhoods with high median home prices values. 
+
+The PCTBACHMOR and PCTVACANT appear to have a strong negative correlation, as areas with a high PCTVACANT rate also have a low PCTBACHMOR rate. Conversely, areas with a high PCTBACHMOR rate have a low PCTVACANT rate. This negative correlation indicates that there may be multicollinearity between these two variables. We will check the strength of this correlation using Pearsons’s correlation to determine if this multicollinearity could be an issue in our regression.
+
+
+```{r variables maps, fig.width = 12, echo=FALSE}
 # Change designs
 pctvacant_map <- ggplot() +
   geom_sf(data = map, aes(fill = PCTVACANT), color = NA) +
@@ -241,9 +349,16 @@ grid.arrange(pctvacant_map, pctsingles_map, pctbachmor_map, lnnbelpov100_map)
 
 ```
 
-# Pearson correlations
+### Pearson correlations
 
-```{r pearson}
+correlation between our dependent variables. For example, PCTBACHMOR is negatively correlated with LNBELPOV100 and PCTVACANT is positively correlated with LNBELPOV100.
+
+Despite the correlations, we can conclude that there is not severe multicollinearity. This is because the Pearson correlation values are all between 0.9 and -0.9. When Pearson correlation values are within this range we generally do not need to be concerned about multicollinearity. 
+
+The Pearson correlation value for the relationship between PCTBACHMOR and PCTVACANT is -0.3 supporting our previous conclusion that there is a negative correlation between the variables. However, since the Pearson correlation is more than -0.9 we do not need to be concerned about severe multicollinearity. 
+
+```{r pearson, echo=FALSE}
+
 predictors <- data %>% dplyr::select(PCTBACHMOR, PCTVACANT, PCTSINGLES, LNBELPOV100)
 
 predictors %>% 
@@ -252,15 +367,29 @@ predictors %>%
   geom_text(aes(label = round(r,digits=2)),size = 8)
 ```
 
-# Regression Analysis
+## Regression Analysis
 
-```{r regression}
+When we review our regression analysis we start by examining the f-ratio. The f-ratio is 840.9, and the p-value associated with the f-ratio is less than 0.0001. Thus, we can reject the null hypothesis that all β coefficients are zero. 
+
+After reviewing the f-ratio, we proceed to reviewing the β coefficients, standard errors, t values, and p-scores for our four dependent variables. All four dependent variables have a p-score which indicates that the β coefficients are statistically significant and we can reject the null hypothesis that the coefficients of any of the β coefficients are equal to 0. There is a statistically negative relationship between the Percent of Vacant homes and the log of median home value. There is also a statistically negative relationship between the log of the number of households living in poverty and the log of median home value. There is statistically positive relationship between the percent of homes which are single family homes and the log of the median home value. There is also a statistically positive relationship between the percent of individuals with a bachelors degree and the log of the median home value.
+
+When review our Beta Coefficients it is important to remember that our dependent variable is log transform. For the percent of homes which are standalone single family homes, percent of homes which are vacant, and percent of individuals with a bachelor degree only the dependent variable is log transformed and the Beta Coefficients are less than 0.3. Thus, we can conclude that as our independent variables go up by 1 unit, the expected change in median home value is approximately $100𝛽_1%$. Thus, as the percent of homes which are vacant goes up by 1% the median home value will decrease by approximately 1.917%. As the percent of homes which are standalone single family homes goes up by 1% the median home value will increase by approximately 0.298%. As the percent of individuals who have a bachelors degree goes up by 1% the median home value will increase by approximately 2.091%. 
+
+For the population below the poverty line both our independent variable and our dependent variable are both log transformed. Thus, as the population below the poverty line increases by 1% the median home value will decrease by approximately $(1.01^𝛽_1 −1)∙100%$, i.e: the median home value will decrease by approximately 0.07848%.
+
+The R-squared value is 0.6623, indicating that 66.23% of the variance in our dependent variable is explained by our four independent variables. 33.77% of the variance is not explained by our four independent variables. Our adjusted R-squared value is 0.6615, indicating that 66.15% of the variance in our dependent variable is explained by our four independent variables after adjusting the r-squared to account for the model including more than one independent variable. 
+
+```{r regression, echo=FALSE}
 ## Regression Results
 
 fit <-lm(LNMEDHVAL ~  PCTVACANT + PCTSINGLES + PCTBACHMOR + LNBELPOV100, data=data)
 
 summary(fit)
+```
 
+The table below shows an analysis of the variance table for our linear regression model. The Sum of Square Errors (SSE) for our model is 230.44. The Regression Sum of Squares (SSR) is equal to 451.745, and the Total Sum of Squares (SST) is equal to 672.185. We can calculate the $R^2$ for our model by dividing the SSR by the SST, i.e: 451.745 / 682.089 which equals 0.6623.
+
+``` {r anova, echo=FALSE}
 anova(fit)
 ```
 
@@ -277,7 +406,7 @@ In cases where this assumption is not met, log transformations are often used. B
 
 The following scatter plots show the relationship between the dependent variable, LNMEDHVAL, and each the predictor variables LNNBELPOV100, PCTBACHMOR, PCTVACANT, and PCTSINGLES. There does not appear to be a linear relationship between LNMEDHVAL and the predictor variables, even with log transformations used. The variables all appear heavily skewed - the relationship between LNNBELPOV and LNBELPOV100 appears to be  negatively skewed, and the individual relationship between the other three predictors and LNMEDHVAL appears to be heavily positively skewed.
  
-```{r scatter}
+```{r scatter, echo=FALSE}
 par(mfrow=c(2,2))
 plot(data$LNBELPOV100, data$LNMEDHVAL)
 plot(data$PCTBACHMOR,data$LNMEDHVAL)
@@ -285,7 +414,7 @@ plot(data$PCTVACANT, data$LNMEDHVAL)
 plot(data$PCTSINGLES, data$LNMEDHVAL)
 ```
 
-###Histogram of the standardized residuals
+### Histogram of the standardized residuals
 
 <!-- This first para may be unnecessary -->
 Another assumption when running linear regression is that regression residuals are distributed normally. However, this assumption of normality is not considered critical in a regression, especially for data sets with a large number of observations. 
@@ -294,7 +423,7 @@ In order to compare residuals for different observations, we standardize the res
 
 The following histogram of standardized residuals shows that residuals appear normally distributed.
 
-```{r resid plot}
+```{r resid plot, echo=FALSE}
 
 #predicted values, residuals and standardized residuals
 
@@ -309,8 +438,7 @@ hist(data$stdres, breaks=100)
 
 ```
 
-
-###Scatter Plot - Standardized Residual by Predicted Value
+### Scatter Plot - Standardized Residual by Predicted Value
 
 <!-- This first para may be unnecessary -->
 
@@ -322,17 +450,19 @@ Outliers also appear to be present based on our scatter plot - there are several
 
 The standardized residuals also appear to be heavily clustered around between the predicted values of about 10.5 to 11.5.
 
-```{r plot_stand_resid}
+```{r plot_stand_resid, echo=FALSE}
 
 plot(data$predvals, data$stdres, xlab = "Predicted Values ", ylab = "Standardized Residuals ", main = "Predicted Values vs. Standardized Residuals ")
 
 ```
-###Spatial Autocorrelation of Variables
+
+### Spatial Autocorrelation of Variables
 
 Based on the maps of the dependent variable LNMEDHVAL and the predictor variables, we can estimate whether observations of each variable appear to show spatial autocorrelation - defined as observing the degree to which similar values cluster near each other. Our variables may appear to spatial autocorrelation  
 
-###Choropleth map of the standardized regression residuals
-```{r resid map}
+### Choropleth map of the standardized regression residuals
+
+```{r resid map, echo=FALSE}
 
 map2 <- cbind(map, data %>% dplyr::select(stdres))
 
@@ -352,11 +482,10 @@ ggplot()+
 
 ## Additional Models
 
-###Stepwise Regression
+### Stepwise Regression
 
 
-
-```{r plot_stepwise}
+```{r plot_stepwise, echo=FALSE}
 
 step <- stepAIC(fit, direction="both")
 # display results
@@ -364,9 +493,9 @@ step$anova
 
 ```
 
-###Cross-Validation
+### Cross-Validation
 
-```{r cross-validation, message=FALSE, cache=FALSE,  echo=TRUE, results='hide', fig.show='hide'}
+```{r cross-validation, message=FALSE, cache=FALSE,  echo=FALSE, results='hide', fig.show='hide'}
 
 fit1 <- lm(LNMEDHVAL ~ PCTVACANT + PCTSINGLES + PCTBACHMOR + LNBELPOV100, data=data)
 cv1 <- CVlm(data=data, fit1, m=5)

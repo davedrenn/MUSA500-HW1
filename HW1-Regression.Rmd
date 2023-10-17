@@ -29,8 +29,6 @@ library(corrr)
 library(tinytex)
 library(extrafont)
 
-
-
 options(scipen = 999)
 ```
 
@@ -329,7 +327,6 @@ ggplot() +
   labs(title = "Natural Log Median Home Value") +
   theme_dark() +
   theme( 
-    plot.title = element_text(family = "A"),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.ticks = element_blank(),
@@ -590,7 +587,5 @@ rmse_both <- cbind(rmse1, rmse2)
 rmse_both %>% kbl() %>% kable_minimal(full_width = FALSE)
 
 ```
-
-## Additional Models
 
 # Discussion and Limitations

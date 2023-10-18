@@ -1,8 +1,6 @@
 ---
 title: "HW1-OLS_Regression"
 output:
-  #html_document:
-    #df_print: paged
   pdf_document:
     latex_engine: xelatex
 date: "2023-10-19"
@@ -596,6 +594,19 @@ rmse_both %>% kbl() %>% kable_minimal(full_width = FALSE)
 
 # Discussion and Limitations
 
+Based on our model we can conclude that there is a statistically significant relationship between our dependent variable, the natural log of the median home value and our four dependent variables. We can conclude that areas of Philadelphia where a larger number of residents live in poverty, residents do not have higher education degrees, and a large number of vacant homes are present are likely to also have a low median home value. 
+
+This conclusion was not surprising, as poorer households are likely to only be able to afford homes in areas with lower median home values. Additionally, redlining during the mid 1900s in Philadelphia identified undesirable neighborhoods. Redlining has a lasting impact on the Philadelphia housing landscape. Neighborhoods which were identified as undesirable continue to have higher vacancy rates and house low income households. 
+
+Our model does a good job explaining the variation in median home value across the city of Philadelphia. The results of the F-test indicate that all our dependent variables are statistically significant predictors of median home value. Our R^2 value of 0.6623 indicates there is a strong linear correlation between our independent variables and the natural log of the median home sales value. We consider a R^2 value above 0.5 to be a indicative of a strong correlation, the 0.5 threshold core a strong correlation is acceptable in the social sciences domain.
+
+Our stepwise regression model included all four of the original predictor variables. Therefore, all four variables are considered statistically significant predictors of our dependent variable, the natural log of median home values, and our model performs best with all four predictors included as opposed to some subset of the independent variables.
+
+	Several core assumptions of OLS regressions are violated by our model. Our predictor variables do not all appear to have linear relationships with our dependent variable - namely LNNBELPOV100, PCTVACANT, and PCTSINGLES. Natural log transformations were used for the dependent variable and the number of households below poverty, but the non-linear relationships still appear. The variance of the residuals also appears to be heteroscedastic, which likely means that our model systematically underperforms in certain areas of the city based on characteristics not accounted for in our model. The predictor variables also appear to show potential spatial autocorrelation, which our model does not account for and could explain the heteroscedasticity of our residuals. 
+
+The predictor variable NBELPOV100 is the only independent variable that is provided as a raw number as opposed to a percentage that normalizes the values to compare across block groups. Block groups with smaller counts of population would experience an outsized impact in the regression model by increasing the count by one household, whereas block groups with larger populations would not experience the same level of impact. Normalizing to percentages allows us to compare 1 percent increases, representing proportional impacts to different block groups. 
+
+Our cross-validation results show that the root mean square error for the four predictor model was lower than that of the two predictor model, identifying the former model as better and more generalizable for new data. 
 
 Ridge Regression is a method that offers solutions to issues that can arise in OLS Regression such as: allowing for a large number of predictors relative to the number of observations, allows for multicollinearity, and deals with overfitting by shrinking the coefficients of variables towards 0 (which can significantly reduce their variance and the RMSE in the validation set). Ridge regression functions by minimizing the SSE subject to a found (i.e., constraint) on the on the quantity called L2 norm (the square root of the sum of the squared β coefficients) where in OLS we minimize the SSE.
 Lasso Regression (least absolute shrinkage & selection operator), is like ridge regression except that it will set the values of some coefficients to exactly 0 for different values of λ, minimizing SSE subject to a bound on the quantity called L1 norm (the sum of absolute values of the β coefficients). Both ridge and lasso regression would not be appropriate here because they drop the assumption of no multicollinearity. When this assumption is violated, we can get incorrect estimates of $β_i$ as well as incorrect estimates of p-values of significance.

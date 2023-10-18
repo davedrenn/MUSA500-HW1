@@ -589,3 +589,7 @@ rmse_both %>% kbl() %>% kable_minimal(full_width = FALSE)
 ```
 
 # Discussion and Limitations
+
+
+Ridge Regression is a method that offers solutions to issues that can arise in OLS Regression such as: allowing for a large number of predictors relative to the number of observations, allows for multicollinearity, and deals with overfitting by shrinking the coefficients of variables towards 0 (which can significantly reduce their variance and the RMSE in the validation set). Ridge regression functions by minimizing the SSE subject to a found (i.e., constraint) on the on the quantity called L2 norm (the square root of the sum of the squared β coefficients) where in OLS we minimize the SSE.
+Lasso Regression (least absolute shrinkage & selection operator), is like ridge regression except that it will set the values of some coefficients to exactly 0 for different values of λ, minimizing SSE subject to a bound on the quantity called L1 norm (the sum of absolute values of the β coefficients). Both ridge and lasso regression would not be appropriate here because they drop the assumption of no multicollinearity. When this assumption is violated, we can get incorrect estimates of $β_i$ as well as incorrect estimates of p-values of significance.

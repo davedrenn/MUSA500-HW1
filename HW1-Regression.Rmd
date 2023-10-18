@@ -53,20 +53,20 @@ We include the percentage of lots which are vacant as a predictor because previo
 
 The data set used in our analysis contains information from the 2000 US Census for Philadelphia, with neighborhood characteristic variables included for 1,720 block groups. Our analysis incorporates the following variables:
 
--   POLY_ID: Census Block Group ID
--   MEDHVAL: Median value of all owner occupied housing units
--   PCBACHMORE: Proportion of residents in Block Group with at least a bachelor's degree
--   PCTVACANT: Proportion of housing units that are vacant
--   PCTSINGLES: Percent of housing units that are detached single family houses
--   NBELPOV100: Number of households with incomes below 100% poverty level (i.e., number of households living in poverty)
--   MEDHHINC: Median household income
+- POLY_ID: Census Block Group ID
+- MEDHVAL: Median value of all owner occupied housing units
+- PCBACHMORE: Proportion of residents in Block Group with at least a bachelor's degree
+- PCTVACANT: Proportion of housing units that are vacant
+- PCTSINGLES: Percent of housing units that are detached single family houses
+- NBELPOV100: Number of households with incomes below 100% poverty level (i.e., number of households living in poverty)
+- MEDHHINC: Median household income
 
 The original data set had 1,816 block groups and was cleaned using the following methods, which reduced to the total number of observations to 1,720:
 
--   Block groups where population \< 40
--   Block groups where there are no housing units
--   Block groups where the median house value is lower than \$10,000
--   One North Philadelphia block group which had a very high median house value (over \$800,000) and a very low median household income (less than \$8,000)
+- Block groups where population \< 40
+- Block groups where there are no housing units
+- Block groups where the median house value is lower than \$10,000
+- One North Philadelphia block group which had a very high median house value (over \$800,000) and a very low median household income (less than \$8,000)
 
 ## Exploratory Data Analysis
 
@@ -465,8 +465,7 @@ When running linear regressions, a core assumption is that there is a linear rel
 
 In cases where this assumption is not met, log transformations are often used. Based on the results of our variable distributions, we have already conducted log transformations for the dependent variable for median home value, now LNMEDHVAL, and for the predictor variable for number of households below poverty, now LNNBELPOV100.
 
-
-The following scatter plots show the relationship between the dependent variable, LNMEDHVAL, and each the predictor variables LNNBELPOV100, PCTBACHMOR, PCTVACANT, and PCTSINGLES. There does not appear to be a linear relationship between LNMEDHVAL and the predictor variables, even with log transformations used. The variables all appear heavily skewed - the relationship between LNNBELPOV and LNBELPOV100 appears to be  negatively skewed, and the individual relationship between the other three predictors and LNMEDHVAL appears to be heavily positively skewed.
+The following scatter plots show the relationship between the dependent variable, LNMEDHVAL, and each the predictor variables LNNBELPOV100, PCTBACHMOR, PCTVACANT, and PCTSINGLES. There does not appear to be a clear linear relationship between LNMEDHVAL and LNNBELPOV100 or PCTSINGLES. The other two variables appear to show a more linear relationship, but PCTVACANT does not appear to show a strong linear relationship.
  
 ```{r scatter, echo=FALSE}
 
@@ -522,10 +521,17 @@ plot(data$predvals, data$stdres, xlab = "Predicted Values ", ylab = "Standardize
 
 ```
 
-
 ### Spatial Autocorrelation of Variables
 
-Based on the maps of the dependent variable LNMEDHVAL and the predictor variables, we can estimate whether observations of each variable appear to show spatial autocorrelation - defined as observing the degree to which similar values cluster near each other. Our variables may appear to spatial autocorrelation
+A critical assumption when building a regression model is that each observation of a variable is independent from other observations of that variable which we examine in our variables as spatial dependence, otherwise known as spatial autocorrelation. Based on the maps of the dependent variable LNMEDHVAL and the predictor variables, we can estimate whether observations of each variable appear to show spatial autocorrelation, which would appear as block groups clustering with similar values:
+
+- The log of median home values appears to show spatial autocorrelation. High values appear to cluster in the downtown area and northwest Philadelphia, while low values appear to cluster around North Philadelphia and southwest Philadelphia, among other areas.
+- Vacancy percentages appear to cluster in similar areas as the low value clusters of the log of median home values - North Philadelphia and southwest Philadelphia.
+- Singles percentages appear to cluster in the northwest and northeast regions of the city.
+- Bachelor’s degree or more percentages appear to cluster in similar areas to the high values of the log of median home values - the downtown area and northwest Philadelphia.
+- The log of the number of households in poverty does not appear to show spatial autocorrelation. 
+
+Based on these maps, each of the variables in our regression model appear to show spatial autocorrelation.
 
 ### Choropleth map of the standardized regression residuals
 

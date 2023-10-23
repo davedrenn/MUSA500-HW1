@@ -1,16 +1,17 @@
 ---
-title: "HW1-OLS_Regression"
-Author: "Richard Barad, Dave Drennan, Jarred Randall"
+title: "Assignment 1 - OLS Regression"
+author: "Richard Barad, Dave Drennan, and  Jarred Randall"
 output:
   pdf_document:
     latex_engine: xelatex
+    toc: true
+    toc_depth: 2
 date: "2023-10-19"
 mainfont: Times New Roman
 editor_options: 
   markdown: 
     wrap: 72
 ---
-
 
 ```{r setup, echo=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
@@ -97,12 +98,10 @@ To examine the relationship between median house values and several neighborhood
 
 The equation is stated as: 
 
-<br>
 $$LNMEDHHINC=β_0+β_1 PCTVACANT+β_2 PCTSINGLES+β_3 PCTBACHMOR+β_4 LNNBELPOV100+ ε $$
 
-<br>
-
 Performing a logarithmic transformation on the dependent variable MEDHVAL and one the independent variables NBELPOV100 helps us to achieve better normality of residuals, which is a core assumption when running an OLS regression that we discuss in greater detail in the regressions assumptions section of the study.
+
 The Beta coefficient β_i of each predictor is interpreted as the amount by which the dependent variable changes as the independent variable increases by one unit, holding all other variables constant. The sign indicates whether the relationship between the dependent variable and the independent variables is positive (direct) or negative (inverse). It is important to look at the sign and value of β_i when the coefficient is statistically significant and different from zero. The β_i is considered statistically significant and different from zero when the p-value falls below our alpha threshold of 0.05. The variable ε is commonly referred to as the residual term or random error term in the model. The residual term ε allows the regression line to fall above (ε \> 0) or below (ε \< 0) the actual data points. ε is the difference between observed values of y and the values of y predicted by the regression model (denoted by y ̂).
 
 ### Regression Assumptions
@@ -129,7 +128,7 @@ For multiple regression, the equation for $σ^2$ is stated as $σ^2 = \frac{SSE}
 
 ### Coefficient of Multiple Determination $R^2$
 
-$R^2$ is the proportion of observed variance in the dependent variable y that is explained by the model by all k predictors - it is often referred to as the coefficient of multiple determination. Higher values of R2 are indicative of a better model. $R^2$ is calculated as $R^2 = 1 - \frac{SSE}{SST}$, where SSE is the sum of squared residuals and SST is the total variability in the dependent variable. Adjusted $R^2$ is the $R^2$ value adjusted for the number of predictors in the model and is used to account for a high number of predictor variables in the model, which can increase $R^2$ based on presence alone. Larger values for Adjusted $R^2$, like $R^2$, are also indicative of a better model. The equation for Adjusted $R^2$ is stated as:
+$R^2$ is the proportion of observed variance in the dependent variable y that is explained by the model by all k predictors - it is often referred to as the coefficient of multiple determination. Higher values of $R^2$ are indicative of a better model. $R^2$ is calculated as $R^2 = 1 - \frac{SSE}{SST}$, where SSE is the sum of squared residuals and SST is the total variability in the dependent variable. Adjusted $R^2$ is the $R^2$ value adjusted for the number of predictors in the model and is used to account for a high number of predictor variables in the model, which can increase $R^2$ based on presence alone. Larger values for Adjusted $R^2$, like $R^2$, are also indicative of a better model. The equation for Adjusted $R^2$ is stated as:
 
 $$R_{adj}^2 = \frac{(n-1)R^2 - k}{n-(k+1)}$$
 
@@ -137,22 +136,23 @@ $$R_{adj}^2 = \frac{(n-1)R^2 - k}{n-(k+1)}$$
 
 For hypothesis testing, we examine a baseline - the null hypothesis - compared to an alternative hypothesis. To examine the overall significance of our regression model, we first use the F-Ratio to test the null hypothesis $H_0: β_i=0$ that none of the independent variables in the model are a significant predictor of the dependent variable (LNMEDHVAL) against the alternative hypothesis $H_a: β_i≠0$ that at least one of the independent variables is a significant predictor of the dependent variable (LNMEDHVAL). Second, we use T-test hypothesis testing to determine the significance of each chosen predictor on our dependent variable LNMEDHVAL - $β_1PCTVACANT$, $β_2PCTSINGLES$, $β_3PCTBACHMOR$, and $β_4LNNBELPOV100$.
 
-PCTVACANT: 
+**PCTVACANT:** 
 
 - $H_0: β_i=0$: Implies that the variable PCTVACANT is not a significant predictor of the dependent variable (LNMEDHVAL). 
 - $H_a: β_i≠0$: Implies that the variable PCTVACANT is a significant predictor of the dependent variable (LNMEDHVAL) for $1 \leq i \leq k$
 
-PCTSINGLES: 
+**PCTSINGLES:** 
 
 - $H_0: β_i=0$: Implies that the variable PCTSINGLES is not a significant predictor of the dependent variable (LNMEDHVAL). 
 - $H_a: β_i≠0$: Implies that the variable PCTSINGLES is a significant predictor of the dependent variable (LNMEDHVAL).
 
-PCTBACHMOR: 
+**PCTBACHMOR:** 
 
 - $H_0: β_i=0$: Implies that the variable PCTBACHMOR is not a significant predictor of the dependent variable (LNMEDHVAL). 
 - $H_a: β_i≠0$: Implies that the variable PCTBACHMOR is a significant predictor of the dependent variable (LNMEDHVAL).
 
-LNNBELPOV100: 
+**LNNBELPOV100:** 
+
 - $H_0: β_i=0$: Implies that the variable LNNBELPOV100 is not a significant predictor of the dependent variable (LNMEDHVAL). 
 - $H_a: β_i≠0$: Implies that the variable LNNBELPOV100 is a significant predictor of the dependent variable (LNMEDHVAL).
 
@@ -181,7 +181,7 @@ The k-fold MSE estimate is computed by averaging the MSEs across the k folds. Th
 
 ## Software
 
-This report used the open source software R to conduct statistical analyses.
+This report uses the open source software R to conduct statistical analyses.
 
 # Results
 
@@ -222,9 +222,10 @@ left_join(summary_stats_mean, summary_stats_sd, by='variable') %>%
   kable_classic()
 ```
 
-# quick code that checks which variables have 0 values for logarithmic transformation
 
 ```{r 0_value_check2, eval=FALSE, echo=FALSE}
+#quick code that checks which variables have 0 values for logarithmic transformation
+
 zero_columns <- apply(data, 2, function(col) any(col == 0)) 
 
 variables_with_zero_values <- names(zero_columns[zero_columns])
@@ -243,7 +244,7 @@ data$LNPCTVACANT <- log(1 + data$PCTVACANT)
 data$LNPCTSINGLES <- log(1 + data$PCTSINGLES)
 ```
 
-#### Median Home Value of Owner-Occupied Housing Units
+#### Median Home Value of Owner-Occupied Housing Units:
 
 The two histograms below show the distribution of our dependent variable, the median home values of owner occupied housing units by block group before and after applying a natural log transformation. The histogram without the natural log transformation peaks near \$75,000 and is right-skewed - it does not have a normal distribution. After applying a natural log transformation, the mean home value has a near normal distribution with a peak around 11.
 
@@ -253,6 +254,8 @@ par(mfrow=c(1,2))
 hist(data$MEDHVAL,breaks=100)
 hist(data$LNMEDHVAL,breaks=100)
 ```
+
+\newpage
 
 #### Percent of Population with a Bachelor Degree:
 
@@ -267,7 +270,9 @@ hist(data$PCTBACHMOR,breaks=100)
 hist(data$LNPCTBACHMOR,breaks=100)
 ```
 
-#### Population Below the Poverty Line
+\newpage
+
+#### Population Below the Poverty Line:
 
 The following histograms show the distribution of the population living below the poverty line in each block group with and without a natural log transformation applied. The histogram without the natural log transformation is again right skewed and peaks around 100 households. There is a very long tail to the right, and multiple outliers are present. Notably, the maximum value is 1,267 households below the poverty line in one census tract - which is more than six times larger than the mean value.
 
@@ -280,7 +285,9 @@ hist(data$NBELPOV100,breaks=100)
 hist(data$LNBELPOV100,breaks=100)
 ```
 
-#### Percent of Vacant Housing Units
+\newpage
+
+#### Percent of Vacant Housing Units:
 
 The following histograms show the distribution for the percent of housing units in a block group which are vacant with and without a natural log transformation. The histogram without the natural log transformation is right skewed and has a long tail, with multiple outliers present. Additionally, there are 163 block groups where 0% of the housing units are vacant.
 
@@ -292,6 +299,8 @@ par(mfrow=c(1,2))
 hist(data$PCTVACANT,breaks=100)
 hist(data$LNPCTVACANT,breaks=100)
 ```
+
+\newpage
 
 #### Percent of Detached Single Family Houses Units
 
@@ -306,11 +315,13 @@ hist(data$PCTSINGLES,breaks=100)
 hist(data$LNPCTSINGLES,breaks=100)
 ```
 
+\newpage
+
 ### Maps
 
 This section includes choropleth maps of our dependent and four independent variables.
 
-#### Map of Dependent Variable
+#### Map of Dependent Variable:
 
 The following map shows our dependent variable, which is the median house value of owner occupied units by block group with a natural log transformation. We observe that the census tracts with the highest median home values are primarily clustered in Center City and northwest Philadelphia. The block groups with the lowest median home values are located north of Center City and west of University City.
 
@@ -335,7 +346,7 @@ ggplot() +
 
 ```
 
-#### Maps of Independent Variables
+#### Maps of Independent Variables:
 
 The following maps show the spatial patterns on our four independent variables: PCTBACHMOR, PCTVACANT, PCTSINGLES, and LNBELPOV100.
 
@@ -345,12 +356,12 @@ Conversely, the PCTSINGLES variable appears to be less correlated with our depen
 
 The independent variables PCTBACHMOR and PCTVACANT appear to have strong negative correlations, as areas with a high PCTVACANT rate also have a low PCTBACHMOR rate. Conversely, areas with a high PCTBACHMOR rate have a low PCTVACANT rate. This negative correlation indicates that there may be multicollinearity between these two variables. We will check the strength of this correlation using the Pearson correlation to determine if this multicollinearity could be an issue in our regression.
 
-```{r variables maps, fig.width = 12, echo=FALSE}
+```{r variables maps, echo=FALSE}
 # Change designs
 pctvacant_map <- ggplot() +
   geom_sf(data = map, aes(fill = PCTVACANT), color = NA) +
   scale_fill_gradient(low = "white",high = "darkblue") +
-  labs(title = "Vacant",
+  labs(title = "Vacant Lots",
        fill = "%")+
   theme_dark() +
   theme( 
@@ -363,7 +374,7 @@ pctvacant_map <- ggplot() +
 pctsingles_map <- ggplot() +
   geom_sf(data = map, aes(fill = PCTSINGLES), color = NA) +
   scale_fill_gradient(low = "white",high = "darkorchid4") +
-  labs(title = "Singles",
+  labs(title = "Single Houses",
        fill = "%")+
   theme_dark() +
   theme( 
@@ -389,7 +400,8 @@ pctbachmor_map <- ggplot() +
 lnnbelpov100_map <- ggplot() +
   geom_sf(data = map, aes(fill = LNNBELPOV), color = NA) +
   scale_fill_gradient(low = "white",high = "darkred") +
-  labs(title = "Natural Log Below Poverty")+
+  labs(title = "LN Below Poverty",
+       fill = "LN")+
   theme_dark() +
   theme( 
     panel.grid.major = element_blank(),
@@ -439,7 +451,7 @@ When reviewing our Beta coefficient, we must consider the effects of the natural
 
 For the population below the poverty line, both our independent variable and our dependent variable are natural log-transformed. Thus, as the population below the poverty line increases by 1, the median home value will change by approximately $(1.01^𝛽_1 −1)∙100%$, i.e: the median home value will decrease by approximately 0.07848%.
 
-The R-squared value is 0.6623, indicating that 66.23% of the variance in our dependent variable is explained by our four independent variables. 33.77% of the variance is not explained by our four independent variables. Our adjusted R-squared value is 0.6615, indicating that 66.15% of the variance in our dependent variable is explained by our four independent variables after adjusting the r-squared to account for the model including more than one independent variable.
+The $R^2$ value is 0.6623, indicating that 66.23% of the variance in our dependent variable is explained by our four independent variables. 33.77% of the variance is not explained by our four independent variables. Our adjusted $R^2$ value is 0.6615, indicating that 66.15% of the variance in our dependent variable is explained by our four independent variables after adjusting the $R^2$ to account for the model including more than one independent variable.
 
 ```{r regression, echo=FALSE}
 ## Regression Results

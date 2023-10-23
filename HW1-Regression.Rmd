@@ -168,7 +168,7 @@ $$LNMEDHHINC=\\β_0+β_1 PCTVACANT+β_2 PCTSINGLES+β_3 PCTBACHMOR+β_4 LNNBELPO
 
 Performing a logarithmic transformation on the dependent variable MEDHVAL and one the independent variables NBELPOV100 helps us to achieve better normality of residuals, which is a core assumption when running an OLS regression that we discuss in greater detail in the regressions assumptions section of the study.
 
-The Beta coefficient $β_i$ of each predictor is interpreted as the amount by which the dependent variable changes as the independent variable increases by one unit, holding all other independent variables constant. The sign indicates whether the relationship between the dependent variable and the independent variables is positive (direct) or negative (inverse). It is important to look at the sign and value of the $β_i$ when the coefficient is statistically significant and different from zero. The $β_i$ is considered statistically significant and different from zero when the p-value falls below our alpha threshold of 0.05. The variable ε is commonly referred to as the residual term or random error term in the model. The residual term ε allows the regression line to fall above (ε \> 0) or below (ε \< 0) the actual data points. ε is the difference between observed values of y and the values of y predicted by the regression model (denoted by $\widehat{y}$).
+The Beta coefficient $β_i$ of each predictor is interpreted as the amount by which the dependent variable changes as the independent variable increases by one unit, holding all other independent variables constant. The sign indicates whether the relationship between the dependent variable and the independent variables is positive (direct) or negative (inverse). It is important to look at the sign and value of the $β_i$ when the coefficient is statistically significant and different from zero. The $β_i$ is considered statistically significant and different from zero when the p-value falls below our alpha threshold of 0.05. The variable ε is commonly referred to as the residual term or random error term in the model. The residual term ε allows the regression line to fall above ($ε > 0 $) or below ($ε < 0$) the actual data points. ε is the difference between observed values of y and the values of y predicted by the regression model (denoted by $\widehat{y}$).
 
 ### Regression Assumptions
 
@@ -658,7 +658,7 @@ statistically significant.
 After reviewing the f-ratio, we consider the $β$ coefficients, standard
 errors, t statistics, and p-values for our four independent variables.
 All four independent variables have a low enough p-value to consider
-them statistically significant (\<0.05) and we can reject the null
+them statistically significant ($<0.05$) and we can reject the null
 hypotheses that any of our β coefficients are equal to 0.
 
 Based on our rejection of the null hypotheses, we can conclude the
@@ -711,8 +711,7 @@ The table below shows an analysis of the variance table for our linear
 regression model. The Sum of Square Errors (SSE) for our model is
 230.44. The Regression Sum of Squares (SSR) is equal to 451.745, and the
 Total Sum of Squares (SST) is equal to 672.185. We can calculate the
-$R^2$ for our model by dividing the SSR by the SST, i.e: 451.745 /
-682.089 which equals 0.6623.
+$R^2$ for our model by dividing the SSR by the SST, i.e: $ \frac{451.745}{682.089}$ which equals 0.6623.
 
 ```{r anova, echo=FALSE}
 anova(fit)
@@ -939,9 +938,9 @@ households.
 Our model does a good job explaining the variation in median home value
 across the city of Philadelphia. The results of the F-test indicate that
 all our dependent variables are statistically significant predictors of
-median home value. Our R\^2 value of 0.6623 indicates there is a strong
+median home value. Our $R^2$ value of 0.6623 indicates there is a strong
 linear correlation between our independent variables and the natural log
-of the median home sales value. We consider a R\^2 value above 0.5 to be
+of the median home sales value. We consider a $R^2$ value above 0.5 to be
 indicative of a strong correlation, the 0.5 threshold core a strong
 correlation is acceptable in the social sciences domain.
 
@@ -986,13 +985,13 @@ coefficients of variables towards 0 (which can significantly reduce
 their variance and the RMSE in the validation set). Ridge regression
 functions by minimizing the SSE subject to a found (i.e., constraint) on
 the on the quantity called L2 norm (the square root of the sum of the
-squared β coefficients) where in OLS we minimize the SSE.
+squared $β$ coefficients) where in OLS we minimize the SSE.
 
 Lasso Regression (least absolute shrinkage & selection operator), is
 like ridge regression except that it will set the values of some
-coefficients to exactly 0 for different values of λ, minimizing SSE
+coefficients to exactly 0 for different values of $λ$, minimizing SSE
 subject to a bound on the quantity called L1 norm (the sum of absolute
-values of the β coefficients). Both ridge and lasso regression would not
+values of the $β$ coefficients). Both ridge and lasso regression would not
 be appropriate here because they drop the assumption of no
 multicollinearity. When this assumption is violated, we can get
 incorrect estimates of $β_i$ as well as incorrect estimates of p-values

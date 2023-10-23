@@ -11,26 +11,9 @@ editor_options:
     wrap: 72
 ---
 
-```{r setup, echo=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
-```
 
-```{r packages}
-#tinytex::install_tinytex()
 
-library(here)
-library(tidyverse)
-library(kableExtra)
-library(sf)
-library(gridExtra)
-library(MASS)
-library(DAAG)
-library(corrr)
-library(tinytex)
-library(extrafont)
 
-options(scipen = 999)
-```
 
 # Introduction
 
@@ -392,11 +375,7 @@ analyses.
 
 ## Exploratory Results
 
-```{r data, echo=FALSE}
 
-data <- read.csv("Data/RegressionData.csv")
-
-```
 
 ### Summary Statistics
 
@@ -408,51 +387,32 @@ The standard deviation is nearly equal to the median, which indicates a
 large amount of variability in average home sale prices across block
 groups in the city.
 
-```{r table, echo=FALSE}
-
-summary_stats_mean <- data %>%
-  summarise(HEDVAL = mean(MEDHVAL),
-            PCTBACHMOR = mean(PCTBACHMOR),
-            NBELPOV100 = mean(NBELPOV100),
-            PCTVACANT = mean(PCTVACANT),
-            PCTSINGLE = mean(PCTSINGLES)) %>%
-  gather(key = "variable", value = "mean")
-            
-summary_stats_sd <- data %>%
-  summarise(HEDVAL = sd(MEDHVAL),
-            PCTBACHMOR = sd(PCTBACHMOR),
-            NBELPOV100 = sd(NBELPOV100),
-            PCTVACANT = sd(PCTVACANT),
-            PCTSINGLE = sd(PCTSINGLES)) %>%
-  gather(key = "variable", value = "sd") %>%
-  mutate(row_names = c('Median Houme Value of all occupied housing units','% of Individuals with Bachelor Degrees or Higher','# Households Living in Poverty','% of Vacant Houses','% of Single House Units')) 
-
-left_join(summary_stats_mean, summary_stats_sd, by='variable') %>%
-  dplyr::select('row_names','mean','sd') %>%
-  kbl(col.names = c('Variable','Mean','Standard Deviation')) %>%
-  kable_classic()
-```
+\begin{table}
+\centering
+\begin{tabular}[t]{l|r|r}
+\hline
+Variable & Mean & Standard Deviation\\
+\hline
+Median Houme Value of all occupied housing units & 66287.733139 & 60006.075990\\
+\hline
+\% of Individuals with Bachelor Degrees or Higher & 16.081372 & 17.769558\\
+\hline
+\# Households Living in Poverty & 189.770930 & 164.318480\\
+\hline
+\% of Vacant Houses & 11.288529 & 9.628472\\
+\hline
+\% of Single House Units & 9.226473 & 13.249250\\
+\hline
+\end{tabular}
+\end{table}
 
 # quick code that checks which variables have 0 values for logarithmic transformation
 
-```{r 0_value_check2, eval=FALSE, echo=FALSE}
-zero_columns <- apply(data, 2, function(col) any(col == 0)) 
 
-variables_with_zero_values <- names(zero_columns[zero_columns])
-
-cat("Columns with 0 values:", paste(variables_with_zero_values, collapse = ", "))
-
-```
 
 ### Histograms
 
-```{r log_trans, echo=FALSE}
-data$LNMEDHVAL <- log(data$MEDHVAL)
-data$LNPCTBACHMOR <- log(1 + data$PCTBACHMOR)
-data$LNBELPOV100 <- log(1 + data$NBELPOV100) #Rename and add N to match original name?
-data$LNPCTVACANT <- log(1 + data$PCTVACANT)
-data$LNPCTSINGLES <- log(1 + data$PCTSINGLES)
-```
+
 
 #### Median Home Value of Owner-Occupied Housing Units
 
@@ -472,11 +432,7 @@ non-linear relationship between our independent and dependent variables.
 The natural log transformation is most widely used with positive-skewed
 (i.e., right-skewed) data such as our dependent variable.
 
-```{r hist_MEDHVAL}
-par(mfrow=c(1,2))
-hist(data$MEDHVAL,breaks=100)
-hist(data$LNMEDHVAL,breaks=100)
-```
+![](HW1-Regression_files/figure-latex/hist_MEDHVAL-1.pdf)<!-- --> 
 
 #### Percent of Population with a Bachelor Degree:
 
@@ -494,12 +450,7 @@ with and without the natural log transformation applied are both not
 normal, we will use the variable without the natural log transformation
 (PCTBACHMORE) for our model.
 
-```{r hist_PCTBACHMOR, echo=FALSE}
-
-par(mfrow=c(1,2))
-hist(data$PCTBACHMOR,breaks=100)
-hist(data$LNPCTBACHMOR,breaks=100)
-```
+![](HW1-Regression_files/figure-latex/hist_PCTBACHMOR-1.pdf)<!-- --> 
 
 #### Population Below the Poverty Line
 
@@ -523,12 +474,7 @@ natural log transformation of the Population Below the Poverty Line
 in the non natural log transformed data supports the usage of the
 natural log transformed variable.
 
-```{r hist_NBELPOV100, echo=FALSE}
-
-par(mfrow=c(1,2))
-hist(data$NBELPOV100,breaks=100)
-hist(data$LNBELPOV100,breaks=100)
-```
+![](HW1-Regression_files/figure-latex/hist_NBELPOV100-1.pdf)<!-- --> 
 
 #### Percent of Vacant Housing Units
 
@@ -547,12 +493,7 @@ distribution. Because neither distribution is normal, we use the
 variable without the natural log transformation in our regression
 analysis (PCTVACANT).
 
-```{r hist_PCTVACANT, echo=FALSE}
-
-par(mfrow=c(1,2))
-hist(data$PCTVACANT,breaks=100)
-hist(data$LNPCTVACANT,breaks=100)
-```
+![](HW1-Regression_files/figure-latex/hist_PCTVACANT-1.pdf)<!-- --> 
 
 #### Percent of Detached Single Family Houses Units
 
@@ -574,12 +515,7 @@ natural log transformed and non-natural log transformed variable do not
 have a normal distribution, we use the non-natural log transformed
 variable in our regression analysis.
 
-```{r hist_PCTSINGLES,echo=FALSE}
-
-par(mfrow=c(1,2))
-hist(data$PCTSINGLES,breaks=100)
-hist(data$LNPCTSINGLES,breaks=100)
-```
+![](HW1-Regression_files/figure-latex/hist_PCTSINGLES-1.pdf)<!-- --> 
 
 ### Maps
 
@@ -595,26 +531,9 @@ median home values are primarily clustered in Center City and northwest
 Philadelphia. The block groups with the lowest median home values are
 located north of Center City and west of University City.
 
-```{r read_data, message=FALSE, warning=FALSE, results="hide"}
 
-map <- st_read("Data/RegressionData.shp")
-```
 
-```{r LNMEDHVAL_map, message=FALSE, warning=FALSE}
-# Change design
-ggplot() +
-  geom_sf(data = map, aes(fill = LNMEDHVAL), color = NA) +
-  scale_fill_gradient(low = "white",high = "darkseagreen4") +
-  labs(title = "Natural Log Median Home Value") +
-  theme_dark() +
-  theme( 
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.ticks = element_blank(),
-    axis.text = element_blank(),
-    )
-
-```
+![](HW1-Regression_files/figure-latex/LNMEDHVAL_map-1.pdf)<!-- --> 
 
 #### Maps of Independent Variables
 
@@ -644,62 +563,7 @@ be multicollinearity between these two variables. We will check the
 strength of this correlation using the Pearson correlation to determine
 if this multicollinearity could be an issue in our regression.
 
-```{r variables maps, fig.width = 12, echo=FALSE}
-# Change designs
-pctvacant_map <- ggplot() +
-  geom_sf(data = map, aes(fill = PCTVACANT), color = NA) +
-  scale_fill_gradient(low = "white",high = "darkblue") +
-  labs(title = "Vacant",
-       fill = "%")+
-  theme_dark() +
-  theme( 
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.ticks = element_blank(),
-    axis.text = element_blank()
-    )
-
-pctsingles_map <- ggplot() +
-  geom_sf(data = map, aes(fill = PCTSINGLES), color = NA) +
-  scale_fill_gradient(low = "white",high = "darkorchid4") +
-  labs(title = "Singles",
-       fill = "%")+
-  theme_dark() +
-  theme( 
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.ticks = element_blank(),
-    axis.text = element_blank()
-    )
-
-pctbachmor_map <- ggplot() +
-  geom_sf(data = map, aes(fill = PCTBACHMOR), color = NA) +
-  scale_fill_gradient(low = "white",high = "darkorange") +
-  labs(title = "Bachelor's or More",
-       fill = "%")+
-  theme_dark() +
-  theme( 
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.ticks = element_blank(),
-    axis.text = element_blank()
-    )
-
-lnnbelpov100_map <- ggplot() +
-  geom_sf(data = map, aes(fill = LNNBELPOV), color = NA) +
-  scale_fill_gradient(low = "white",high = "darkred") +
-  labs(title = "Natural Log Below Poverty")+
-  theme_dark() +
-  theme( 
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.ticks = element_blank(),
-    axis.text = element_blank()
-    )
-
-grid.arrange(pctvacant_map, pctsingles_map, pctbachmor_map, lnnbelpov100_map)
-
-```
+![](HW1-Regression_files/figure-latex/variables maps-1.pdf)<!-- --> 
 
 ### Pearson correlations
 
@@ -718,15 +582,7 @@ and PCTVACANT is -0.3, supporting our previous conclusion that there is
 a negative correlation between the variables. However, the Pearson
 correlation is within the acceptable range -0.8 to 0.8.
 
-```{r pearson, echo=FALSE}
-
-predictors <- data %>% dplyr::select(PCTBACHMOR, PCTVACANT, PCTSINGLES, LNBELPOV100)
-
-predictors %>% 
-  correlate() %>% 
-  autoplot() +
-  geom_text(aes(label = round(r,digits=2)),size = 8)
-```
+![](HW1-Regression_files/figure-latex/pearson-1.pdf)<!-- --> 
 
 ## Regression Analysis
 
@@ -786,12 +642,30 @@ variables. Our adjusted R-squared value is 0.6615, indicating that
 four independent variables after adjusting the r-squared to account for
 the model including more than one independent variable.
 
-```{r regression, echo=FALSE}
-## Regression Results
 
-fit <-lm(LNMEDHVAL ~  PCTVACANT + PCTSINGLES + PCTBACHMOR + LNBELPOV100, data=data)
-
-summary(fit)
+```
+## 
+## Call:
+## lm(formula = LNMEDHVAL ~ PCTVACANT + PCTSINGLES + PCTBACHMOR + 
+##     LNBELPOV100, data = data)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.25825 -0.20391  0.03822  0.21744  2.24347 
+## 
+## Coefficients:
+##               Estimate Std. Error t value             Pr(>|t|)    
+## (Intercept) 11.1137661  0.0465330 238.836 < 0.0000000000000002 ***
+## PCTVACANT   -0.0191569  0.0009779 -19.590 < 0.0000000000000002 ***
+## PCTSINGLES   0.0029769  0.0007032   4.234            0.0000242 ***
+## PCTBACHMOR   0.0209098  0.0005432  38.494 < 0.0000000000000002 ***
+## LNBELPOV100 -0.0789054  0.0084569  -9.330 < 0.0000000000000002 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.3665 on 1715 degrees of freedom
+## Multiple R-squared:  0.6623,	Adjusted R-squared:  0.6615 
+## F-statistic: 840.9 on 4 and 1715 DF,  p-value: < 0.00000000000000022
 ```
 
 The table below shows an analysis of the variance table for our linear
@@ -801,8 +675,19 @@ Total Sum of Squares (SST) is equal to 672.185. We can calculate the
 $R^2$ for our model by dividing the SSR by the SST, i.e: 451.745 /
 682.089 which equals 0.6623.
 
-```{r anova, echo=FALSE}
-anova(fit)
+
+```
+## Analysis of Variance Table
+## 
+## Response: LNMEDHVAL
+##               Df  Sum Sq Mean Sq  F value                Pr(>F)    
+## PCTVACANT      1 180.392 180.392 1343.087 < 0.00000000000000022 ***
+## PCTSINGLES     1  24.543  24.543  182.734 < 0.00000000000000022 ***
+## PCTBACHMOR     1 235.118 235.118 1750.551 < 0.00000000000000022 ***
+## LNBELPOV100    1  11.692  11.692   87.054 < 0.00000000000000022 ***
+## Residuals   1715 230.344   0.134                                   
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 
 ## Regression Assumptions Checks
@@ -834,14 +719,7 @@ the relationship between LNNBELPOV and LNBELPOV100 appears to be
 negatively skewed, and the individual relationship between the other
 three predictors and LNMEDHVAL appears to be heavily positively skewed.
 
-```{r scatter, echo=FALSE}
-
-par(mfrow=c(2,2))
-plot(data$LNBELPOV100, data$LNMEDHVAL)
-plot(data$PCTBACHMOR,data$LNMEDHVAL)
-plot(data$PCTVACANT, data$LNMEDHVAL)
-plot(data$PCTSINGLES, data$LNMEDHVAL)
-```
+![](HW1-Regression_files/figure-latex/scatter-1.pdf)<!-- --> 
 
 ### Histogram of the standardized residuals
 
@@ -860,20 +738,7 @@ residual is from our model's estimate
 The following histogram of standardized residuals shows that residuals
 appear normally distributed.
 
-```{r resid plot, echo=FALSE}
-
-#predicted values, residuals and standardized residuals
-
-#Predicted values (y-hats)
-data$predvals <- fitted(fit) 
-#Residuals
-data$resids <- residuals(fit)
-#Standardized Residuals
-data$stdres <- rstandard(fit)
-
-hist(data$stdres, breaks=100)
-
-```
+![](HW1-Regression_files/figure-latex/resid plot-1.pdf)<!-- --> 
 
 ### Scatter Plot - Standardized Residual by Predicted Value
 
@@ -898,11 +763,7 @@ deviation below 0.
 The standardized residuals also appear to be heavily clustered around
 between the predicted values of about 10.5 to 11.5.
 
-```{r plot_stand_resid, echo=FALSE}
-
-plot(data$predvals, data$stdres, xlab = "Predicted Values ", ylab = "Standardized Residuals ", main = "Predicted Values vs. Standardized Residuals ")
-
-```
+![](HW1-Regression_files/figure-latex/plot_stand_resid-1.pdf)<!-- --> 
 
 ### Spatial Autocorrelation of Variables
 
@@ -942,23 +803,7 @@ appear to show spatial autocorrelation.
 
 ### Choropleth map of the standardized regression residuals
 
-```{r resid map, echo=FALSE}
-
-map2 <- cbind(map, data %>% dplyr::select(stdres))
-
-ggplot()+
-  geom_sf(data=map2, aes(fill = stdres), color = NA)+
-  scale_fill_viridis_c()+
-  labs(title = "Standardized Regression Residuals") +
-  theme_dark() +
-  theme( 
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.ticks = element_blank(),
-    axis.text = element_blank()
-    )
-
-```
+![](HW1-Regression_files/figure-latex/resid map-1.pdf)<!-- --> 
 
 ## Additional Models
 
@@ -969,13 +814,32 @@ results in a final model that retains all four of the original predictor
 variables. Therefore, all four predictors had sufficiently low p-values
 and removing predictors did not lower the value of the AIC.
 
-```{r plot_stepwise, echo=FALSE}
 
+```
+## Start:  AIC=-3448.07
+## LNMEDHVAL ~ PCTVACANT + PCTSINGLES + PCTBACHMOR + LNBELPOV100
+## 
+##               Df Sum of Sq    RSS     AIC
+## <none>                     230.34 -3448.1
+## - PCTSINGLES   1     2.407 232.75 -3432.2
+## - LNBELPOV100  1    11.692 242.04 -3364.9
+## - PCTVACANT    1    51.546 281.89 -3102.7
+## - PCTBACHMOR   1   199.020 429.36 -2379.0
+```
 
-step <- stepAIC(fit, direction="both")
-# display results
-step$anova
-
+```
+## Stepwise Model Path 
+## Analysis of Deviance Table
+## 
+## Initial Model:
+## LNMEDHVAL ~ PCTVACANT + PCTSINGLES + PCTBACHMOR + LNBELPOV100
+## 
+## Final Model:
+## LNMEDHVAL ~ PCTVACANT + PCTSINGLES + PCTBACHMOR + LNBELPOV100
+## 
+## 
+##   Step Df Deviance Resid. Df Resid. Dev       AIC
+## 1                       1715   230.3435 -3448.073
 ```
 
 ### Cross-Validation
@@ -989,27 +853,7 @@ predictors for median home value. Given that rmse1 is lower than rmse2,
 our original model is considered more generalizable when using different
 folds of the data and is thus a better fit for the model.
 
-```{r cross-validation, message=FALSE, cache=FALSE,  echo=FALSE, results='hide', fig.show='hide'}
 
-fit1 <- lm(LNMEDHVAL ~ PCTVACANT + PCTSINGLES + PCTBACHMOR + LNBELPOV100, data=data)
-cv1 <- CVlm(data=data, fit1, m=5)
-
-mse1 <- attr(cv1, "ms")
-rmse1 <- sqrt(mse1)						  #Obtaining RMSE for model 1
-rmse1
-
-fit2 <- lm(LNMEDHVAL ~ PCTVACANT + MEDHHINC, data=data)
-cv2 <- CVlm(data=data, fit2, m=5)
-
-mse2 <- attr(cv2, "ms")
-rmse2 <- sqrt(mse2)						  #Obtaining RMSE for model 2
-rmse2
-
-rmse_both <- cbind(rmse1, rmse2)
-
-rmse_both %>% kbl() %>% kable_minimal(full_width = FALSE)
-
-```
 
 # Discussion and Limitations
 

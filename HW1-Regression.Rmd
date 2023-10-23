@@ -651,11 +651,11 @@ predictors %>%
 
 We first examine the f-ratio of our regression analysis. The f-ratio is
 840.9, and the p-value associated with the f-ratio is less than 0.0001.
-Thus, we can reject the null hypothesis that all β coefficients are
+Thus, we can reject the null hypothesis that all $β$ coefficients are
 zero, and at least one of our independent variables is considered
 statistically significant.
 
-After reviewing the f-ratio, we consider the β coefficients, standard
+After reviewing the f-ratio, we consider the $β$ coefficients, standard
 errors, t statistics, and p-values for our four independent variables.
 All four independent variables have a low enough p-value to consider
 them statistically significant (\<0.05) and we can reject the null
@@ -673,11 +673,11 @@ following for block groups in our model:
     variables for the proportion of homes which are single family homes
     and the percent of individuals with a bachelor's degree.
 
-When reviewing our Beta coefficient, we must consider the effects of the
+When reviewing our $β$ coefficient, we must consider the effects of the
 natural log transformation on our dependent variable. For the predictors
 proportion of homes which are standalone single family homes, proportion
 of homes which are vacant, and percent of individuals with a bachelor
-degree, only the dependent variable is natural log transformed. The Beta
+degree, only the dependent variable is natural log transformed. The $β$
 coefficients are also less than 0.3. Thus, we can conclude that as our
 independent variables increase by 1 unit, the expected change in median
 home value is approximately $100𝛽_1%$:
@@ -725,8 +725,6 @@ already examined the variable distributions in a prior section.
 
 ### Scatter Plots - Linear Relationships Between Variables
 
-<!-- This first and second para may be unnecessary -->
-
 When running linear regressions, a core assumption is that there is a
 linear relationship between the dependent variable and each of the
 predictor variables. To check this assumption, we plot the dependent
@@ -758,8 +756,6 @@ plot(data$PCTSINGLES, data$LNMEDHVAL)
 
 ### Histogram of the standardized residuals
 
-<!-- This first para may be unnecessary -->
-
 Another assumption when running linear regression is that regression
 residuals are distributed normally. However, this assumption of
 normality is not considered critical in a regression, especially for
@@ -789,8 +785,6 @@ hist(data$stdres, breaks=100)
 ```
 
 ### Scatter Plot - Standardized Residual by Predicted Value
-
-<!-- This first para may be unnecessary -->
 
 An additional core assumption of linear regression is that there is
 constant variance in residuals compared to the predicted values of the
